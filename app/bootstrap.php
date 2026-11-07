@@ -13,12 +13,10 @@ const VERSION_SCHEMA = '1';
 date_default_timezone_set('Africa/Abidjan');
 mb_internal_encoding('UTF-8');
 
-$fichierConfig = __DIR__ . '/config.local.php';
-if (!is_file($fichierConfig)) {
-    http_response_code(503);
-    exit('Idjô Académie : configuration manquante (app/config.local.php).');
+$GLOBALS['CONFIG'] = require __DIR__ . '/config.php';
+if (is_file(__DIR__ . '/config.local.php')) {
+    $GLOBALS['CONFIG'] = array_replace_recursive($GLOBALS['CONFIG'], require __DIR__ . '/config.local.php');
 }
-$GLOBALS['CONFIG'] = require $fichierConfig;
 
 /** Lit une valeur de configuration, ex. conf('db.nom'). */
 function conf(string $cle, $defaut = null)
@@ -87,22 +85,36 @@ if (PHP_SAPI !== 'cli' && session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-/* ---------- Base de données ---------- */
+/* ---------- Base de données (SQLite par défaut, MySQL possible) ---------- */
+function pilote(): string
+{
+    return conf('db.type', 'sqlite') === 'mysql' ? 'mysql' : 'sqlite';
+}
+
 function db(): PDO
 {
     static $pdo = null;
     if ($pdo === null) {
-        $c = conf('db');
-        $pdo = new PDO(
-            sprintf('mysql:host=%s;port=%d;dbname=%s;charset=utf8mb4', $c['hote'] ?? '127.0.0.1', $c['port'] ?? 3306, $c['nom']),
-            $c['utilisateur'],
-            $c['mot_de_passe'],
-            [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES => false,
-            ]
-        );
+        $options = [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false,
+        ];
+        if (pilote() === 'mysql') {
+            $c = conf('db');
+            $pdo = new PDO(
+                sprintf('mysql:host=%s;port=%d;dbname=%s;charset=utf8mb4', $c['hote'] ?? '127.0.0.1', $c['port'] ?? 3306, $c['nom']),
+                $c['utilisateur'],
+                $c['mot_de_passe'],
+                $options
+            );
+        } else {
+            $pdo = new PDO('sqlite:' . dossier_stockage('base') . '/academie.sqlite', null, null, $options);
+            $pdo->exec('PRAGMA journal_mode = WAL');
+            $pdo->exec('PRAGMA synchronous = NORMAL');
+            $pdo->exec('PRAGMA foreign_keys = ON');
+            $pdo->exec('PRAGMA busy_timeout = 8000');
+        }
         installer_si_besoin($pdo);
     }
     return $pdo;
@@ -110,14 +122,15 @@ function db(): PDO
 
 function installer_si_besoin(PDO $pdo): void
 {
-    $existe = $pdo->query("SHOW TABLES LIKE 'reglages'")->fetchColumn();
-    if ($existe) {
+    try {
         $v = $pdo->query("SELECT valeur FROM reglages WHERE cle = 'version_schema'")->fetchColumn();
         if ($v === VERSION_SCHEMA) {
             return;
         }
+    } catch (PDOException $e) {
+        // Base vide : on la crée.
     }
-    $sql = file_get_contents(__DIR__ . '/schema.sql');
+    $sql = file_get_contents(__DIR__ . (pilote() === 'mysql' ? '/schema.sql' : '/schema-sqlite.sql'));
     $sql = preg_replace('/^--.*$/m', '', $sql);
     foreach (array_filter(array_map('trim', explode(';', $sql))) as $requete) {
         $pdo->exec($requete);
@@ -147,6 +160,26 @@ function importer_formation_initiale(PDO $pdo): void
             $pdo->prepare('INSERT INTO lecons (module_id, titre, resume, duree_sec, apercu_gratuit, ordre, cree_le) VALUES (?,?,?,?,?,?,?)')
                 ->execute([$mid, $l['titre'], $l['resume'], $l['duree_sec'], $l['apercu_gratuit'] ? 1 : 0, $j + 1, $maintenant]);
         }
+    }
+}
+
+/**
+ * Ajoute une ligne ou la met à jour si elle existe déjà (fonctionne avec SQLite et MySQL).
+ * $cles : colonnes qui identifient la ligne ; $valeurs : autres colonnes.
+ */
+function enregistrer_ligne(string $table, array $cles, array $valeurs): void
+{
+    $where = implode(' AND ', array_map(fn ($c) => "$c = ?", array_keys($cles)));
+    $st = db()->prepare("SELECT COUNT(*) FROM $table WHERE $where");
+    $st->execute(array_values($cles));
+    if ((int) $st->fetchColumn() > 0) {
+        $set = implode(', ', array_map(fn ($c) => "$c = ?", array_keys($valeurs)));
+        db()->prepare("UPDATE $table SET $set WHERE $where")->execute([...array_values($valeurs), ...array_values($cles)]);
+    } else {
+        $tout = $cles + $valeurs;
+        $colonnes = implode(', ', array_keys($tout));
+        $places = implode(', ', array_fill(0, count($tout), '?'));
+        db()->prepare("INSERT INTO $table ($colonnes) VALUES ($places)")->execute(array_values($tout));
     }
 }
 
@@ -385,8 +418,10 @@ function marquer_verifie(array $u, bool $garderMotDePasse = false): array
 {
     if ($u['email_verifie_le'] === null) {
         $garder = $garderMotDePasse && mb_strtolower($u['email']) !== ADMIN_EMAIL;
-        db()->prepare('UPDATE utilisateurs SET email_verifie_le = ?, mot_de_passe = IF(? = 1, mot_de_passe, NULL) WHERE id = ?')
-            ->execute([maintenant(), $garder ? 1 : 0, $u['id']]);
+        db()->prepare($garder
+            ? 'UPDATE utilisateurs SET email_verifie_le = ? WHERE id = ?'
+            : 'UPDATE utilisateurs SET email_verifie_le = ?, mot_de_passe = NULL WHERE id = ?')
+            ->execute([maintenant(), $u['id']]);
         $u = utilisateur_par_email($u['email']);
     }
     return $u;

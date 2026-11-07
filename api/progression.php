@@ -32,9 +32,11 @@ if ($terminee === '1') {
     $nouvelleFin = null;
 }
 
-db()->prepare('INSERT INTO progression (utilisateur_id, lecon_id, position_sec, terminee_le, modifie_le) VALUES (?,?,?,?,?)
-    ON DUPLICATE KEY UPDATE position_sec = VALUES(position_sec), terminee_le = VALUES(terminee_le), modifie_le = VALUES(modifie_le)')
-    ->execute([$u['id'], $l['id'], $nouvellePosition, $nouvelleFin, maintenant()]);
+enregistrer_ligne('progression', ['utilisateur_id' => $u['id'], 'lecon_id' => $l['id']], [
+    'position_sec' => $nouvellePosition,
+    'terminee_le' => $nouvelleFin,
+    'modifie_le' => maintenant(),
+]);
 
 if ($enJson) {
     [$faites, $total, $pct] = progression_formation((int) $u['id'], (int) $l['formation_id']);

@@ -100,8 +100,11 @@ nettoyer_envois_abandonnes();
 if ($cible === 'video') {
     supprimer_fichier_prive('videos', $l['video_fichier']);
     $duree = (int) round((float) ($_POST['duree'] ?? 0));
-    db()->prepare('UPDATE lecons SET video_fichier = ?, video_taille = ?, video_type = ?, duree_sec = IF(? > 0, ?, duree_sec) WHERE id = ?')
-        ->execute([$nomFinal, $taille, $regle['extensions'][$extension], $duree, $duree, $l['id']]);
+    db()->prepare('UPDATE lecons SET video_fichier = ?, video_taille = ?, video_type = ? WHERE id = ?')
+        ->execute([$nomFinal, $taille, $regle['extensions'][$extension], $l['id']]);
+    if ($duree > 0) {
+        db()->prepare('UPDATE lecons SET duree_sec = ? WHERE id = ?')->execute([$duree, $l['id']]);
+    }
 } else {
     $nomAffiche = trim(pathinfo($nom, PATHINFO_FILENAME)) ?: 'Fichier';
     db()->prepare('INSERT INTO fichiers (lecon_id, nom, fichier, taille, type, cree_le) VALUES (?,?,?,?,?,?)')

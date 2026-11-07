@@ -12,8 +12,9 @@ if ($q !== '') {
     $params = ['%' . $q . '%', '%' . $q . '%'];
 }
 $total = compter("SELECT COUNT(*) FROM utilisateurs u $where", $params);
+$concat = pilote() === 'mysql' ? "GROUP_CONCAT(f.titre SEPARATOR ' · ')" : "GROUP_CONCAT(f.titre, ' · ')";
 $st = db()->prepare("SELECT u.*,
-    (SELECT GROUP_CONCAT(f.titre SEPARATOR ' · ') FROM acces a JOIN formations f ON f.id = a.formation_id WHERE a.utilisateur_id = u.id AND a.actif = 1) AS formations,
+    (SELECT $concat FROM acces a JOIN formations f ON f.id = a.formation_id WHERE a.utilisateur_id = u.id AND a.actif = 1) AS formations,
     (SELECT COUNT(*) FROM demandes d WHERE d.utilisateur_id = u.id AND d.statut = 'en_attente') AS nb_demandes
     FROM utilisateurs u $where ORDER BY u.cree_le DESC LIMIT $parPage OFFSET " . (($page - 1) * $parPage));
 $st->execute($params);

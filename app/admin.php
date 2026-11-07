@@ -60,9 +60,12 @@ function prochain_ordre(string $table, string $colonneParent, int $parentId): in
 
 function accorder_acces(int $uid, int $formationId, string $formule, string $note = ''): void
 {
-    db()->prepare('INSERT INTO acces (utilisateur_id, formation_id, formule, actif, note, accorde_le) VALUES (?,?,?,1,?,?)
-        ON DUPLICATE KEY UPDATE actif = 1, formule = VALUES(formule), note = VALUES(note), accorde_le = VALUES(accorde_le)')
-        ->execute([$uid, $formationId, $formule, $note, maintenant()]);
+    enregistrer_ligne('acces', ['utilisateur_id' => $uid, 'formation_id' => $formationId], [
+        'formule' => $formule,
+        'actif' => 1,
+        'note' => $note,
+        'accorde_le' => maintenant(),
+    ]);
     db()->prepare("UPDATE demandes SET statut = 'acceptee' WHERE utilisateur_id = ? AND formation_id = ? AND statut = 'en_attente'")
         ->execute([$uid, $formationId]);
     $st = db()->prepare('SELECT * FROM utilisateurs WHERE id = ?');
