@@ -14,7 +14,7 @@ $_SESSION['google_etat'] = $etat;
 $_SESSION['google_verificateur'] = $verificateur;
 
 $params = [
-    'client_id' => reglage('google_client_id'),
+    'client_id' => google_identifiants()['id'],
     'redirect_uri' => url('compte/google-retour.php'),
     'response_type' => 'code',
     'scope' => 'openid email profile',

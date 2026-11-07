@@ -30,6 +30,30 @@ if (est_post()) {
             definir_reglage('google_client_secret', '');
         }
         flash('succes', google_configure() ? 'Connexion Google activée.' : 'Réglages Google enregistrés (connexion Google désactivée tant que les deux champs ne sont pas remplis).');
+    } elseif ($action === 'smtp') {
+        $hote = trim((string) ($_POST['smtp_hote'] ?? ''));
+        $utilisateur = mb_strtolower(trim((string) ($_POST['smtp_utilisateur'] ?? '')));
+        $motDePasse = str_replace(' ', '', (string) ($_POST['smtp_mot_de_passe'] ?? ''));
+        if (isset($_POST['effacer_smtp'])) {
+            foreach (['smtp_hote', 'smtp_port', 'smtp_utilisateur', 'smtp_mot_de_passe', 'smtp_expediteur'] as $cle) {
+                definir_reglage($cle, '');
+            }
+            flash('info', 'Envoi par SMTP désactivé : les e-mails partent à nouveau par l\'hébergement.');
+            rediriger('/admin/reglages.php');
+        }
+        if ($hote === '' || !filter_var($utilisateur, FILTER_VALIDATE_EMAIL)) {
+            flash('erreur', 'Remplis le serveur et l\'adresse e-mail.');
+            rediriger('/admin/reglages.php');
+        }
+        definir_reglage('smtp_hote', $hote);
+        definir_reglage('smtp_port', (string) max(1, (int) ($_POST['smtp_port'] ?? 465)));
+        definir_reglage('smtp_utilisateur', $utilisateur);
+        definir_reglage('smtp_expediteur', $utilisateur);
+        if ($motDePasse !== '') {
+            definir_reglage('smtp_mot_de_passe', $motDePasse);
+        }
+        $ok = envoyer_email(ADMIN_EMAIL, 'Test d\'envoi Idjô Académie', 'L\'envoi d\'e-mails fonctionne', '<p>Les e-mails de confirmation et les liens de connexion partent maintenant depuis ' . e($utilisateur) . '.</p>');
+        flash($ok ? 'succes' : 'erreur', $ok ? 'Réglages enregistrés et e-mail de test envoyé à ' . ADMIN_EMAIL . '.' : 'Réglages enregistrés, mais l\'envoi a échoué : ' . reglage('dernier_echec_mail'));
     } elseif ($action === 'test_email') {
         $ok = envoyer_email(ADMIN_EMAIL, 'Test d\'envoi Idjô Académie', 'L\'envoi d\'e-mails fonctionne', '<p>Si tu lis ce message, les e-mails de confirmation et les liens de connexion partent bien.</p>');
         flash($ok ? 'succes' : 'erreur', $ok ? 'E-mail de test envoyé à ' . ADMIN_EMAIL . '. Regarde aussi dans les spams.' : 'L\'envoi a échoué. Vérifie la configuration e-mail de l\'hébergement.');
@@ -38,6 +62,7 @@ if (est_post()) {
 }
 
 $googleId = reglage('google_client_id');
+$google = google_identifiants();
 $secretEnregistre = reglage('google_client_secret') !== '';
 $origine = rtrim(url(), '/');
 
@@ -57,7 +82,7 @@ admin_entete('Réglages', 'reglages');
 
   <section class="carte-app">
     <h2 class="titre-bloc-app">Connexion avec Google</h2>
-    <p class="petit">État : <strong><?= google_configure() ? 'activée' : 'désactivée' ?></strong></p>
+    <p class="petit">État : <strong><?= google_configure() ? 'activée' : 'désactivée' ?></strong><?= $google['source'] === 'fichier' ? ' (clés lues dans le fichier JSON déposé dans le dossier app)' : '' ?></p>
     <p class="petit">Dans la console Google Cloud, l'origine JavaScript autorisée est <code><?= e($origine) ?></code> et l'URI de redirection autorisée est <code><?= e(url('compte/google-retour.php')) ?></code>.</p>
     <form method="post" class="formulaire" autocomplete="off">
       <?= champ_csrf() ?><input type="hidden" name="action" value="google">
@@ -69,9 +94,28 @@ admin_entete('Réglages', 'reglages');
   </section>
 
   <section class="carte-app">
-    <h2 class="titre-bloc-app">E-mails</h2>
-    <p class="petit">Les e-mails partent de <code><?= e((string) conf('mail.expediteur')) ?></code>. Les réponses arrivent sur <?= e(ADMIN_EMAIL) ?>.</p>
-    <form method="post"><?= champ_csrf() ?><input type="hidden" name="action" value="test_email"><button class="bouton bouton--verre" type="submit">M'envoyer un e-mail de test</button></form>
+    <h2 class="titre-bloc-app">Envoi des e-mails</h2>
+    <?php if (reglage('smtp_hote') !== ''): ?>
+      <p class="petit">Les e-mails partent de <strong><?= e(reglage('smtp_expediteur')) ?></strong> par <?= e(reglage('smtp_hote')) ?>.</p>
+    <?php else: ?>
+      <p class="petit">Les e-mails partent de l'hébergement (<code><?= e((string) conf('mail.expediteur')) ?></code>). Gmail les refuse souvent : pour qu'ils arrivent, envoie-les depuis ton Gmail avec un mot de passe d'application.</p>
+    <?php endif; ?>
+    <?php if (reglage('dernier_echec_mail') !== ''): ?><p class="petit">Dernier échec : <?= e(reglage('dernier_echec_mail')) ?></p><?php endif; ?>
+    <form method="post" class="formulaire" autocomplete="off">
+      <?= champ_csrf() ?><input type="hidden" name="action" value="smtp">
+      <label class="champ"><span>Adresse qui envoie</span><input type="email" name="smtp_utilisateur" value="<?= e(reglage('smtp_utilisateur') ?: ADMIN_EMAIL) ?>"></label>
+      <label class="champ"><span>Mot de passe d'application Google (16 lettres) <?= reglage('smtp_mot_de_passe') !== '' ? '<small>(enregistré : laisse vide pour le garder)</small>' : '' ?></span><input type="password" name="smtp_mot_de_passe" autocomplete="new-password"></label>
+      <details class="petit"><summary>Serveur (déjà réglé pour Gmail)</summary>
+        <div class="ligne-formule" style="margin-top:8px">
+          <input type="text" name="smtp_hote" value="<?= e(reglage('smtp_hote') ?: 'smtp.gmail.com') ?>" aria-label="Serveur SMTP">
+          <input type="text" name="smtp_port" value="<?= e(reglage('smtp_port') ?: '465') ?>" inputmode="numeric" aria-label="Port">
+        </div>
+      </details>
+      <?php if (reglage('smtp_hote') !== ''): ?><label class="case"><input type="checkbox" name="effacer_smtp"> <span>Désactiver et revenir à l'envoi par l'hébergement</span></label><?php endif; ?>
+      <button class="bouton" type="submit">Enregistrer et m'envoyer un test</button>
+    </form>
+    <p class="petit">Pour créer le mot de passe d'application : <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener">myaccount.google.com/apppasswords</a> (la validation en deux étapes doit être activée), nomme-le « Idjô Académie », puis colle les 16 lettres ici.</p>
+    <form method="post"><?= champ_csrf() ?><input type="hidden" name="action" value="test_email"><button class="lien-bouton" type="submit">M'envoyer un e-mail de test</button></form>
   </section>
 </div>
 <?php pied();

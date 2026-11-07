@@ -4,9 +4,29 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/bootstrap.php';
 
+/**
+ * Identifiants Google : ceux de Admin > Réglages, sinon le fichier JSON téléchargé depuis Google Cloud
+ * (client_secret_….json) déposé dans le dossier app/ du site (dossier fermé au web).
+ */
+function google_identifiants(): array
+{
+    if (reglage('google_client_id') !== '' && reglage('google_client_secret') !== '') {
+        return ['id' => reglage('google_client_id'), 'secret' => reglage('google_client_secret'), 'source' => 'reglages'];
+    }
+    foreach (array_merge(glob(__DIR__ . '/client_secret*.json') ?: [], glob(__DIR__ . '/google-client*.json') ?: []) as $fichier) {
+        $donnees = json_decode((string) @file_get_contents($fichier), true);
+        $web = $donnees['web'] ?? null;
+        if (!empty($web['client_id']) && !empty($web['client_secret'])) {
+            return ['id' => (string) $web['client_id'], 'secret' => (string) $web['client_secret'], 'source' => 'fichier'];
+        }
+    }
+    return ['id' => '', 'secret' => '', 'source' => ''];
+}
+
 function google_configure(): bool
 {
-    return reglage('google_client_id') !== '' && reglage('google_client_secret') !== '';
+    $g = google_identifiants();
+    return $g['id'] !== '' && $g['secret'] !== '';
 }
 
 function bouton_google(string $suite = ''): string

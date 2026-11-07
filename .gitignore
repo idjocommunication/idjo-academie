@@ -1,5 +1,7 @@
 # Réglages et données du serveur (jamais dans le dépôt)
 app/config.local.php
+app/client_secret*.json
+app/google-client*.json
 stockage/
 televersements/*
 !televersements/.htaccess

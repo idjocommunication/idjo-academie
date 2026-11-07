@@ -473,12 +473,28 @@ function envoyer_email(string $a, string $sujet, string $titre, string $texteHtm
         . '<p style="color:#7D6D7B;font-size:12px;margin-top:18px">Tu reçois cet e-mail parce que quelqu\'un a utilisé ton adresse sur ' . e(url()) . '. Si ce n\'est pas toi, ignore-le.</p>'
         . '</div></body></html>';
 
-    $expediteur = (string) conf('mail.expediteur', 'noreply@localhost');
-    if (conf('mail.mode') === 'fichier') {
+    if (conf('mail.mode') === 'fichier' && reglage('smtp_hote') === '') {
         $f = dossier_stockage('mails') . '/' . date('Ymd-His') . '-' . bin2hex(random_bytes(3)) . '.html';
         file_put_contents($f, "A: $a\nSujet: $sujet\nLien: " . ($lien ?? '') . "\n\n" . $html);
         return true;
     }
+    if (reglage('smtp_hote') !== '') {
+        require_once __DIR__ . '/smtp.php';
+        try {
+            smtp_envoyer([
+                'hote' => reglage('smtp_hote'),
+                'port' => (int) reglage('smtp_port', '465'),
+                'utilisateur' => reglage('smtp_utilisateur'),
+                'mot_de_passe' => reglage('smtp_mot_de_passe'),
+                'expediteur' => reglage('smtp_expediteur') ?: reglage('smtp_utilisateur'),
+            ], $a, $sujet, $html);
+            return true;
+        } catch (Throwable $erreur) {
+            noter_echec_email($a, $sujet, 'SMTP : ' . $erreur->getMessage());
+            return false;
+        }
+    }
+    $expediteur = (string) conf('mail.expediteur', 'noreply@localhost');
     $entetes = implode("\r\n", [
         'MIME-Version: 1.0',
         'Content-Type: text/html; charset=UTF-8',
@@ -487,9 +503,21 @@ function envoyer_email(string $a, string $sujet, string $titre, string $texteHtm
     ]);
     $ok = @mail($a, mb_encode_mimeheader($sujet, 'UTF-8'), $html, $entetes, '-f' . $expediteur);
     if (!$ok) {
-        @file_put_contents(dossier_stockage('journaux') . '/mail.log', date('c') . " échec vers $a : $sujet\n", FILE_APPEND);
+        noter_echec_email($a, $sujet, 'mail() a renvoyé une erreur');
     }
     return $ok;
+}
+
+/** Garde une trace des envois ratés (affichée dans Admin > Réglages). */
+function noter_echec_email(string $a, string $sujet, string $raison): void
+{
+    $ligne = date('d/m/Y H:i') . " · $a · $sujet · $raison";
+    @file_put_contents(dossier_stockage('journaux') . '/mail.log', $ligne . "\n", FILE_APPEND);
+    try {
+        definir_reglage('dernier_echec_mail', $ligne);
+    } catch (Throwable $e) {
+        // La trace dans le fichier suffit.
+    }
 }
 
 /* ---------- Formations ---------- */

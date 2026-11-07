@@ -43,8 +43,8 @@ unset($_SESSION['google_etat'], $_SESSION['google_verificateur']);
 
 $jetons = requete_google('https://oauth2.googleapis.com/token', [
     'code' => (string) ($_GET['code'] ?? ''),
-    'client_id' => reglage('google_client_id'),
-    'client_secret' => reglage('google_client_secret'),
+    'client_id' => google_identifiants()['id'],
+    'client_secret' => google_identifiants()['secret'],
     'redirect_uri' => url('compte/google-retour.php'),
     'grant_type' => 'authorization_code',
     'code_verifier' => $verificateur,
