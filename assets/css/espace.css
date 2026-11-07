@@ -245,3 +245,11 @@ code { font-size: 0.8125rem; background: var(--fond-doux); border: 1px solid var
   .navigation-lecons .bouton { flex: 1; }
   .liste-acces li { flex-direction: column; }
 }
+
+/* ---------- Pages de texte (confidentialité) ---------- */
+.texte-legal { max-width: 760px; }
+.texte-legal h2 { font-family: var(--titres); font-weight: 600; font-size: 1.3rem; color: var(--titre); margin: 32px 0 10px; }
+.texte-legal p, .texte-legal li { line-height: 1.7; color: var(--texte); }
+.texte-legal ul { padding-left: 20px; display: grid; gap: 8px; margin-bottom: 12px; }
+.texte-legal a:not(.bouton) { color: var(--neon); }
+.texte-legal .bouton { margin-top: 28px; }
