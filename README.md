@@ -8,7 +8,7 @@ Site statique (HTML, CSS, JavaScript), sans installation ni compilation. Il se p
 
 | Fichier | Contenu |
 | --- | --- |
-| `index.html` | Accueil : grand encadré avec vidéo, les 4 modules, assistant de questions avec aperçu des leçons (parallaxe), onglets par module, étapes, formules, formateur, questions fréquentes |
+| `index.html` | Accueil : haut de page sombre avec vidéo, les 4 modules, assistant de questions avec aperçu des leçons (parallaxe), onglets par module, étapes, formules, formateur, questions fréquentes |
 | `formation.html` | Page de la formation : ce que tu vas apprendre, contenu en accordéon, carte d'inscription, prérequis, description |
 
 ## Ce que tu peux modifier toi-même
@@ -26,17 +26,19 @@ Le numéro WhatsApp est réglé sur +225 07 47 93 37 48 : chaque bouton « S'ins
 
 ## Identité visuelle
 
-- Ambiance « blanc + encadrés affiche » : pages blanches, et de grands blocs arrondis prune et néon repris de l'affiche « Comming soon » (haut de page, assistant, appel final, formule recommandée). Mise en page inspirée du modèle « Rocket CTA » de MotionSites.
+- Ambiance « haut sombre, puis blanc » : haut de page sombre en pleine largeur avec la vidéo, puis sections blanches ; l'assistant, l'appel final et la formule recommandée restent sombres. La barre du haut passe du verre foncé au blanc quand on descend. Pas de lueur violette sur les fonds blancs. Couleurs reprises de l'affiche « Comming soon ». Mise en page inspirée du modèle « Rocket CTA » de MotionSites.
 - Couleurs : néon `#B606AE` (boutons, mots clés), rose néon `#FB7AF5` (mots clés sur fond sombre), rose très pâle `#FFF5FE` (sections teintées), prune `#3A0238`, aubergine `#2D022B`, nuit `#130112` (blocs sombres), texte `#1A0719`, blanc `#FFFFFF`.
 - Dans `assets/css/style.css`, la classe `.sombre` passe un bloc en version foncée : tous les textes s'y mettent en clair.
 - Polices (licence SIL OFL, fichiers dans `assets/fonts/`) : Outfit pour les titres, Inter pour le texte.
 - Images et vidéo générées avec Google Flow, dans `assets/img/flow/` et `assets/video/`. La vidéo du haut de page ne se charge que sur ordinateur ; sur téléphone, une image fixe la remplace.
-- Le logo garde ses propres formes vectorisées (dessinées avec la police Archivo), en néon `#B606AE`. Pour le refaire : `python3 outils/build_logo.py Archivo[wdth,wght].ttf assets/img`.
+- Le logo est le « idjô » d'Alan (fichier d'origine : `outils/logo-idjo-original.png`), vectorisé, avec « Académie » à côté en Outfit moyenne. Couleurs : idjô noir `#1A0719`, chapeau et ronds néon `#B606AE` ; sur fond sombre, idjô blanc et touches rose néon `#FB7AF5`. Icône : carré néon, idjô blanc.
+- Pour refaire tous les fichiers du logo : `python3 outils/generer_logo.py Outfit[wght].ttf` (et, si le dessin d'idjô change, d'abord `python3 outils/tracer_logo_idjo.py outils/logo-idjo-original.png outils/logo-idjo-traces.json`).
 - Logos dans `assets/img/` :
   - `logo.svg` / `logo.png` : version principale, pour fond clair ;
   - `logo-blanc.svg` / `logo-blanc.png` : pour fond sombre ;
   - `logo-slogan.svg` / `logo-slogan-blanc.svg` (et `.png`) : avec le slogan ;
-  - `logo-symbole.svg` / `logo-symbole.png` : le symbole seul (photo de profil, favicon).
+  - `logo-symbole.svg` / `logo-symbole.png` : l'icône carrée (photo de profil, favicon) ;
+  - `og-image.png` : l'image qui s'affiche quand on partage le lien.
 
 ## Voir le site sur ton ordinateur
 
