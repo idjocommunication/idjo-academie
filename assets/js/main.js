@@ -79,6 +79,20 @@
   });
   $$("#nav-liens a").forEach(function (a) { a.addEventListener("click", function () { nav.classList.remove("menu-ouvert"); }); });
 
+  /* ---------- Barre de navigation : sombre sur le haut de page, claire ensuite ---------- */
+  var hautSombre = $(".hero, .tete-formation");
+  if (nav && hautSombre) {
+    var navEnAttente = false;
+    var majNav = function () {
+      navEnAttente = false;
+      var basNav = nav.querySelector(".nav__barre").getBoundingClientRect().bottom;
+      nav.classList.toggle("nav--sombre", hautSombre.getBoundingClientRect().bottom > basNav);
+    };
+    majNav();
+    window.addEventListener("scroll", function () { if (!navEnAttente) { navEnAttente = true; requestAnimationFrame(majNav); } }, { passive: true });
+    window.addEventListener("resize", majNav);
+  }
+
   /* ---------- Apparitions au défilement ---------- */
   function observerApparitions(racine) {
     var cibles = $$(".apparait:not(.est-visible)", racine);
