@@ -8,7 +8,7 @@ Site statique (HTML, CSS, JavaScript), sans installation ni compilation. Il se p
 
 | Fichier | Contenu |
 | --- | --- |
-| `index.html` | Accueil : lecteur vidéo chapitré, les 4 modules, onglets par module, étapes, formules, formateur, questions fréquentes |
+| `index.html` | Accueil : vidéo de fond, les 4 modules, assistant de questions avec aperçu des leçons (parallaxe), onglets par module, étapes, formules, formateur, questions fréquentes |
 | `formation.html` | Page de la formation : ce que tu vas apprendre, contenu en accordéon, carte d'inscription, prérequis, description |
 
 ## Ce que tu peux modifier toi-même
@@ -18,15 +18,19 @@ Site statique (HTML, CSS, JavaScript), sans installation ni compilation. Il se p
 | Le numéro WhatsApp des boutons « S'inscrire » | `assets/js/config.js`, ligne `whatsapp` (format `2250700000000`) |
 | Un lien de paiement (Chariow, CinetPay…) | `assets/js/config.js`, ligne `lienPaiement` |
 | Les prix et le contenu des 3 formules | `assets/js/config.js`, bloc `formules` |
-| Les titres, résumés et durées des leçons | `assets/js/data.js` |
+| Les titres, résumés et durées des leçons, les images des modules | `assets/js/data.js` |
+| Les réponses de l'assistant | `assets/js/main.js`, fonction `repondre` |
 | La photo du formateur | ajoute `assets/img/formateur.jpg`, puis remplace le « A » dans les blocs `formateur__photo` des deux pages par `<img src="assets/img/formateur.jpg" alt="Alan">` |
 
 Tant que le numéro WhatsApp est vide, les boutons « S'inscrire » mènent à la section Tarifs.
 
 ## Identité visuelle
 
-- Couleurs (aplats uniquement, aucun dégradé) : noir `#000000`, violet `#6A1BF5`, violet profond `#3A0C8C`, lilas `#EDE3FF`, blanc `#FFFFFF`.
-- Police : [Archivo](https://github.com/Omnibus-Type/Archivo) (licence SIL OFL, fichier `assets/fonts/OFL-Archivo.txt`), version large et grasse pour les titres.
+- Design inspiré du modèle « Rocket CTA » de MotionSites : fond noir, panneaux en verre dépoli, halos violets discrets, boutons blancs au texte animé.
+- Couleurs : noir `#000000`, violet `#6A1BF5`, violet clair `#A98BFF` (textes sur fond noir), lilas `#EDE3FF`, blanc `#FFFFFF`.
+- Polices (licence SIL OFL, fichiers dans `assets/fonts/`) : Instrument Serif pour les titres, Inter pour le texte.
+- Images et vidéo générées avec Google Flow, dans `assets/img/flow/` et `assets/video/`. La vidéo du haut de page ne se charge que sur ordinateur ; sur téléphone, une image fixe la remplace.
+- Le logo garde ses propres formes vectorisées (dessinées avec la police Archivo).
 - Logos dans `assets/img/` :
   - `logo.svg` / `logo.png` : version principale, pour fond clair ;
   - `logo-blanc.svg` / `logo-blanc.png` : pour fond noir ;
