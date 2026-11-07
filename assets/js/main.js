@@ -67,6 +67,19 @@
     if (C.lienPaiement) return { href: C.lienPaiement, externe: true };
     return { href: surPageFormation ? "index.html#tarifs" : "#tarifs", externe: false };
   }
+  /* Visiteur déjà connecté : « Connexion » devient « Mon espace » (ou « Admin »). */
+  if (surAcademie && window.fetch) {
+    fetch("/api/session.php", { credentials: "same-origin", cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (s) {
+        if (!s || !s.connecte) return;
+        $$(".nav__compte").forEach(function (a) {
+          a.textContent = s.admin ? "Admin" : "Mon espace";
+          a.setAttribute("href", s.admin ? "/admin/" : "/espace/");
+        });
+      })
+      .catch(function () {});
+  }
   function lienWhatsapp() {
     return "https://wa.me/" + C.whatsapp + "?text=" + encodeURIComponent("Bonjour, j'ai une question sur Idjô Académie.");
   }

@@ -13,6 +13,7 @@ body.app { background: #FAF7FA; display: flex; flex-direction: column; min-heigh
 .barre-app__liens > a:not(.bouton) { text-decoration: none; font-size: 0.9375rem; color: var(--texte-doux); }
 .barre-app__liens > a:not(.bouton):hover, .barre-app__liens > a[aria-current="page"] { color: var(--neon); }
 .barre-app__liens > a[aria-current="page"] { font-weight: 600; }
+.barre-app__accueil { display: inline-flex; align-items: center; gap: 6px; }
 .barre-app__deconnexion button { background: none; border: 0; padding: 0; cursor: pointer; font-size: 0.9375rem; color: var(--texte-doux); }
 .barre-app__deconnexion button:hover { color: var(--titre); }
 
