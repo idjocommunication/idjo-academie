@@ -12,7 +12,9 @@ from fontTools.pens.transformPen import TransformPen
 FONT_PATH, OUT = sys.argv[1], sys.argv[2]
 
 NOIR = "#000000"
-VIOLET = "#6A1BF5"
+VIOLET = "#B606AE"  # néon de l'affiche
+ROSE = "#FB7AF5"  # rose néon (accent sur fond sombre)
+PRUNE = "#2D022B"
 BLANC = "#FFFFFF"
 
 tt = TTFont(FONT_PATH)
@@ -142,27 +144,27 @@ def lockup(fond_mark, tige, chevron_mark, texte, accent, nom):
 
 
 # 1) logo principal (fond clair)
-lockup(NOIR, BLANC, VIOLET, NOIR, VIOLET, "logo.svg")
+lockup(VIOLET, BLANC, BLANC, NOIR, VIOLET, "logo.svg")
 # 2) logo pour fond noir
-lockup(VIOLET, BLANC, BLANC, BLANC, VIOLET, "logo-blanc.svg")
+lockup(VIOLET, BLANC, BLANC, BLANC, ROSE, "logo-blanc.svg")
 # 3) symbole seul
 with open(f"{OUT}/logo-symbole.svg", "w") as f:
-    f.write(svg_doc(120, 120, mark(0, 0, 120, NOIR, BLANC, VIOLET), "Idjô Académie"))
+    f.write(svg_doc(120, 120, mark(0, 0, 120, VIOLET, BLANC, BLANC), "Idjô Académie"))
 with open(f"{OUT}/favicon.svg", "w") as f:
-    f.write(svg_doc(120, 120, mark(0, 0, 120, NOIR, BLANC, VIOLET), "Idjô Académie"))
+    f.write(svg_doc(120, 120, mark(0, 0, 120, VIOLET, BLANC, BLANC), "Idjô Académie"))
 
-# 4) image de partage (1200x630) : fond noir, logo blanc, accroche
+# 4) image de partage (1200x630) : fond prune, logo blanc, accroche
 W, H = 1200, 630
-body = f'<rect width="{W}" height="{H}" fill="{NOIR}"/>'
+body = f'<rect width="{W}" height="{H}" fill="{PRUNE}"/>'
 body += mark(96, 150, 150, VIOLET, BLANC, BLANC)
-wm, wmw = wordmark(96 + 150 + 38, 150 + 75 + 34, 66, BLANC, VIOLET)
+wm, wmw = wordmark(96 + 150 + 38, 150 + 75 + 34, 66, BLANC, ROSE)
 body += wm
 g, w, gs = shape("Apprendre à gagner de l'argent", 112, 700)
 g2, w2, gs2 = shape("grâce à l'IA.", 112, 700)
 sc = min(52 / (tt["OS/2"].sCapHeight or 700), 1008 / max(w, w2))
 body += f'<path d="{"".join(glyph_path(gs, n, dx, sc, 430, 96) for n, dx in g)}" fill="{BLANC}"/>'
-body += f'<path d="{"".join(glyph_path(gs2, n, dx, sc, 500, 96) for n, dx in g2)}" fill="{BLANC}"/>'
-body += f'<rect x="96" y="548" width="1008" height="10" fill="#2A2A2A"/>'
+body += f'<path d="{"".join(glyph_path(gs2, n, dx, sc, 500, 96) for n, dx in g2)}" fill="{ROSE}"/>'
+body += f'<rect x="96" y="548" width="1008" height="10" fill="#4A0F46"/>'
 body += f'<rect x="96" y="548" width="250" height="10" fill="{VIOLET}"/>'
 with open(f"{OUT}/og-image.svg", "w") as f:
     f.write(svg_doc(W, H, body, "Idjô Académie"))
@@ -187,6 +189,6 @@ def lockup_slogan(fond_mark, tige, chevron_mark, texte, accent, couleur_slogan, 
         f.write(svg_doc(W, H, body, "Idjô Académie : apprendre à gagner de l'argent grâce à l'IA"))
 
 
-lockup_slogan(NOIR, BLANC, VIOLET, NOIR, VIOLET, "#3A0C8C", "logo-slogan.svg")
-lockup_slogan(VIOLET, BLANC, BLANC, BLANC, VIOLET, "#EDE3FF", "logo-slogan-blanc.svg")
+lockup_slogan(VIOLET, BLANC, BLANC, NOIR, VIOLET, "#3A0238", "logo-slogan.svg")
+lockup_slogan(VIOLET, BLANC, BLANC, BLANC, ROSE, "#FDE8FC", "logo-slogan-blanc.svg")
 print("slogan ok")

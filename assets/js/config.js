@@ -6,7 +6,7 @@ window.CONFIG = {
   // Numéro WhatsApp au format international, sans espace ni « + ».
   // Exemple pour la Côte d'Ivoire : "2250700000000".
   // Tant qu'il est vide, les boutons « S'inscrire » mènent à la section Tarifs.
-  whatsapp: "",
+  whatsapp: "2250747933748",
 
   // Lien de paiement en ligne (Chariow, CinetPay…). Laisse vide si tu encaisses par WhatsApp.
   lienPaiement: "",

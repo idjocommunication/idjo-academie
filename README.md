@@ -8,7 +8,7 @@ Site statique (HTML, CSS, JavaScript), sans installation ni compilation. Il se p
 
 | Fichier | Contenu |
 | --- | --- |
-| `index.html` | Accueil : vidéo de fond, les 4 modules, assistant de questions avec aperçu des leçons (parallaxe), onglets par module, étapes, formules, formateur, questions fréquentes |
+| `index.html` | Accueil : grand encadré avec vidéo, les 4 modules, assistant de questions avec aperçu des leçons (parallaxe), onglets par module, étapes, formules, formateur, questions fréquentes |
 | `formation.html` | Page de la formation : ce que tu vas apprendre, contenu en accordéon, carte d'inscription, prérequis, description |
 
 ## Ce que tu peux modifier toi-même
@@ -22,18 +22,19 @@ Site statique (HTML, CSS, JavaScript), sans installation ni compilation. Il se p
 | Les réponses de l'assistant | `assets/js/main.js`, fonction `repondre` |
 | La photo du formateur | ajoute `assets/img/formateur.jpg`, puis remplace le « A » dans les blocs `formateur__photo` des deux pages par `<img src="assets/img/formateur.jpg" alt="Alan">` |
 
-Tant que le numéro WhatsApp est vide, les boutons « S'inscrire » mènent à la section Tarifs.
+Le numéro WhatsApp est réglé sur +225 07 47 93 37 48 : chaque bouton « S'inscrire » ouvre WhatsApp avec un message prêt (formule choisie et prix). Si tu vides ce numéro, les boutons mènent à la section Tarifs.
 
 ## Identité visuelle
 
-- Design inspiré du modèle « Rocket CTA » de MotionSites : fond noir, panneaux en verre dépoli, halos violets discrets, boutons blancs au texte animé.
-- Couleurs : noir `#000000`, violet `#6A1BF5`, violet clair `#A98BFF` (textes sur fond noir), lilas `#EDE3FF`, blanc `#FFFFFF`.
-- Polices (licence SIL OFL, fichiers dans `assets/fonts/`) : Instrument Serif pour les titres, Inter pour le texte.
+- Ambiance « blanc + encadrés affiche » : pages blanches, et de grands blocs arrondis prune et néon repris de l'affiche « Comming soon » (haut de page, assistant, appel final, formule recommandée). Mise en page inspirée du modèle « Rocket CTA » de MotionSites.
+- Couleurs : néon `#B606AE` (boutons, mots clés), rose néon `#FB7AF5` (mots clés sur fond sombre), rose très pâle `#FFF5FE` (sections teintées), prune `#3A0238`, aubergine `#2D022B`, nuit `#130112` (blocs sombres), texte `#1A0719`, blanc `#FFFFFF`.
+- Dans `assets/css/style.css`, la classe `.sombre` passe un bloc en version foncée : tous les textes s'y mettent en clair.
+- Polices (licence SIL OFL, fichiers dans `assets/fonts/`) : Outfit pour les titres, Inter pour le texte.
 - Images et vidéo générées avec Google Flow, dans `assets/img/flow/` et `assets/video/`. La vidéo du haut de page ne se charge que sur ordinateur ; sur téléphone, une image fixe la remplace.
-- Le logo garde ses propres formes vectorisées (dessinées avec la police Archivo).
+- Le logo garde ses propres formes vectorisées (dessinées avec la police Archivo), en néon `#B606AE`. Pour le refaire : `python3 outils/build_logo.py Archivo[wdth,wght].ttf assets/img`.
 - Logos dans `assets/img/` :
   - `logo.svg` / `logo.png` : version principale, pour fond clair ;
-  - `logo-blanc.svg` / `logo-blanc.png` : pour fond noir ;
+  - `logo-blanc.svg` / `logo-blanc.png` : pour fond sombre ;
   - `logo-slogan.svg` / `logo-slogan-blanc.svg` (et `.png`) : avec le slogan ;
   - `logo-symbole.svg` / `logo-symbole.png` : le symbole seul (photo de profil, favicon).
 
