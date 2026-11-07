@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+  <script>
+    // L'ancienne adresse GitHub Pages renvoie vers le site de l'académie.
+    if (/github\.io$/.test(location.hostname)) {
+      location.replace("https://academie.xn--idjcommunication-pvb.com" + location.pathname.replace(/^\/idjo-academie/, "") + location.search + location.hash);
+    }
+  </script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Idjô Académie : apprendre à gagner de l'argent grâce à l'IA</title>
@@ -9,9 +15,9 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="Idjô Académie : apprendre à gagner de l'argent grâce à l'IA">
   <meta property="og:description" content="4 modules, 26 leçons vidéo, des exercices concrets. Du mindset à tes premiers clients qui paient chaque mois.">
-  <meta property="og:image" content="https://idjocommunication.github.io/idjo-academie/assets/img/og-image.png">
-  <meta property="og:url" content="https://idjocommunication.github.io/idjo-academie/">
-  <link rel="canonical" href="https://idjocommunication.github.io/idjo-academie/">
+  <meta property="og:image" content="https://academie.xn--idjcommunication-pvb.com/assets/img/og-image.png">
+  <meta property="og:url" content="https://academie.xn--idjcommunication-pvb.com/">
+  <link rel="canonical" href="https://academie.xn--idjcommunication-pvb.com/">
   <meta property="og:locale" content="fr_FR">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">

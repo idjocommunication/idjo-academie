@@ -1,5 +1,6 @@
 # Idjô Académie : réglages du serveur (Hostinger / LiteSpeed)
 DirectoryIndex index.html index.php
+ErrorDocument 404 /404.html
 Options -Indexes
 
 <IfModule mod_rewrite.c>
