@@ -1,0 +1,6 @@
+# Réglages et données du serveur (jamais dans le dépôt)
+app/config.local.php
+stockage/
+televersements/*
+!televersements/.htaccess
+outils/__pycache__/

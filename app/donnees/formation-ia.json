@@ -1,0 +1,215 @@
+{
+ "slug": "gagner-argent-ia",
+ "titre": "Gagner de l'argent grâce à l'IA : la formation complète",
+ "sous_titre": "Du mindset à tes premiers clients mensuels : crée des contenus, des sites et des publicités avec l’IA, et vends-les.",
+ "prix_fcfa": 35000,
+ "image": "assets/img/flow/entete-formation.webp",
+ "modules": [
+  {
+   "titre": "Le mindset : penser comme quelqu'un qui veut devenir riche",
+   "description": "Installe l'état d'esprit qui fait tenir jusqu'au premier franc gagné.",
+   "image": "assets/img/flow/module-1.webp",
+   "livrable": "Ton plan de bâtisseur sur 90 jours",
+   "lecons": [
+    {
+     "titre": "L'argent récompense la valeur, pas l'effort",
+     "resume": "Pourquoi on est payé pour un problème réglé et pas pour le temps passé. Tu repères 10 problèmes autour de toi que des gens paieraient pour régler.",
+     "duree_sec": 600,
+     "apercu_gratuit": true
+    },
+    {
+     "titre": "Remplacer les croyances qui bloquent",
+     "resume": "Les phrases reçues sur l'argent, et comment les réécrire en croyances de bâtisseur.",
+     "duree_sec": 540,
+     "apercu_gratuit": false
+    },
+    {
+     "titre": "Ta vision et ton objectif chiffré",
+     "resume": "Ton « pourquoi », puis un objectif en FCFA à 90 jours, découpé en clients concrets.",
+     "duree_sec": 660,
+     "apercu_gratuit": false
+    },
+    {
+     "titre": "La discipline : la routine du bâtisseur",
+     "resume": "Deux heures protégées par jour, la règle des 3 tâches et le défi des 21 jours.",
+     "duree_sec": 480,
+     "apercu_gratuit": false
+    },
+    {
+     "titre": "Gérer l'argent que tu vas gagner",
+     "resume": "Séparer tes comptes, répartir chaque revenu et tenir face à la pression familiale.",
+     "duree_sec": 600,
+     "apercu_gratuit": false
+    },
+    {
+     "titre": "La dimension spirituelle",
+     "resume": "Foi, patience, intégrité : tenir dans la durée sans chercher de raccourci.",
+     "duree_sec": 540,
+     "apercu_gratuit": false
+    }
+   ]
+  },
+  {
+   "titre": "Les bases de l'IA : faire travailler l'IA pour toi",
+   "description": "Fais produire à l'IA des textes, visuels, vidéos et voix de qualité pro.",
+   "image": "assets/img/flow/module-2.webp",
+   "livrable": "Ta boîte de 20 prompts et 3 réalisations",
+   "lecons": [
+    {
+     "titre": "Comprendre l'IA en 10 minutes",
+     "resume": "Ce qu'est un assistant IA, ses limites, et quel outil utiliser pour chaque besoin.",
+     "duree_sec": 600,
+     "apercu_gratuit": true
+    },
+    {
+     "titre": "L'art du prompt : parler à l'IA comme à un employé brillant",
+     "resume": "La formule rôle, contexte, tâche, format, et les 5 réflexes qui changent les réponses.",
+     "duree_sec": 840,
+     "apercu_gratuit": false
+    },
+    {
+     "titre": "Écrire des textes qui vendent",
+     "resume": "La structure AIDA pour tes posts, descriptions de produits et messages WhatsApp.",
+     "duree_sec": 660,
+     "apercu_gratuit": false
+    },
+    {
+     "titre": "Créer des visuels avec l'IA",
+     "resume": "Générer des images, puis finir des affiches pro dans Canva aux couleurs du client.",
+     "duree_sec": 780,
+     "apercu_gratuit": false
+    },
+    {
+     "titre": "Vidéos et voix avec l'IA",
+     "resume": "Script, voix off, images et montage dans CapCut pour un Reel de 30 secondes.",
+     "duree_sec": 840,
+     "apercu_gratuit": false
+    },
+    {
+     "titre": "L'IA comme assistant personnel",
+     "resume": "Résumer, planifier, créer des tableaux et apprendre plus vite chaque semaine.",
+     "duree_sec": 540,
+     "apercu_gratuit": false
+    },
+    {
+     "titre": "Tes premiers revenus avec l'IA de base",
+     "resume": "Les micro-services à vendre tout de suite et où trouver tes premiers clients.",
+     "duree_sec": 600,
+     "apercu_gratuit": false
+    }
+   ]
+  },
+  {
+   "titre": "Créer des sites et des boutiques en ligne avec l'IA",
+   "description": "Construis un site qui encaisse en Mobile Money, puis vends ce service.",
+   "image": "assets/img/flow/module-3.webp",
+   "livrable": "Un site publié et ta grille d'offres",
+   "lecons": [
+    {
+     "titre": "Les 3 façons de gagner de l'argent avec un site",
+     "resume": "Vendre des sites, lancer ta boutique ou vendre des produits digitaux : capital, délais et profils.",
+     "duree_sec": 480,
+     "apercu_gratuit": false
+    },
+    {
+     "titre": "Choisir le bon outil",
+     "resume": "Hostinger, Wix, Lovable, Chariow ou WordPress : lequel pour quel projet.",
+     "duree_sec": 600,
+     "apercu_gratuit": false
+    },
+    {
+     "titre": "Encaisser en Côte d'Ivoire : le Mobile Money d'abord",
+     "resume": "Du paiement par WhatsApp aux agrégateurs, avec les commissions à prévoir.",
+     "duree_sec": 720,
+     "apercu_gratuit": false
+    },
+    {
+     "titre": "Atelier : construire un site en une journée avec l'IA",
+     "resume": "Du brief client à la mise en ligne, étape par étape, avec le prompt de départ.",
+     "duree_sec": 900,
+     "apercu_gratuit": false
+    },
+    {
+     "titre": "Lancer sa boutique de produits physiques",
+     "resume": "Choisir le produit, s'approvisionner, livrer et calculer ta marge avant de lancer.",
+     "duree_sec": 720,
+     "apercu_gratuit": false
+    },
+    {
+     "titre": "Vendre des produits digitaux",
+     "resume": "Ebook, pack de prompts, mini-formation : créer avec l'IA et vendre sans stock.",
+     "duree_sec": 600,
+     "apercu_gratuit": false
+    },
+    {
+     "titre": "Vendre des sites aux entreprises",
+     "resume": "Les prix du marché, tes packs, le script WhatsApp et la sécurité de l'acompte.",
+     "duree_sec": 780,
+     "apercu_gratuit": false
+    }
+   ]
+  },
+  {
+   "titre": "La publicité avec l'IA : encaisser chaque fin de mois",
+   "description": "Lance des pubs qui vendent et fais-toi payer un forfait chaque mois.",
+   "image": "assets/img/flow/module-4.webp",
+   "livrable": "Une campagne lancée et ton offre mensuelle",
+   "lecons": [
+    {
+     "titre": "Comment marche la pub en ligne",
+     "resume": "Les régies, les objectifs de campagne et les 5 indicateurs à connaître.",
+     "duree_sec": 600,
+     "apercu_gratuit": true
+    },
+    {
+     "titre": "Préparer le terrain et payer ses pubs",
+     "resume": "Comptes, accès partenaire, pixel et carte de paiement qui passe.",
+     "duree_sec": 660,
+     "apercu_gratuit": false
+    },
+    {
+     "titre": "Créer des pubs qui arrêtent le pouce, avec l'IA",
+     "resume": "La méthode des 4 angles, les prompts d'accroches et les outils IA de Meta.",
+     "duree_sec": 840,
+     "apercu_gratuit": false
+    },
+    {
+     "titre": "Ciblage et budget",
+     "resume": "Zone, audience, structure de test et règles pour couper ou augmenter.",
+     "duree_sec": 720,
+     "apercu_gratuit": false
+    },
+    {
+     "titre": "Analyser et optimiser avec l'IA",
+     "resume": "Lire les chiffres dans l'ordre du parcours client et écrire le rapport mensuel.",
+     "duree_sec": 660,
+     "apercu_gratuit": false
+    },
+    {
+     "titre": "Encaisser chaque fin de mois : vendre la gestion de pub",
+     "resume": "Les prix du marché, tes packs mensuels et comment signer tes premiers clients.",
+     "duree_sec": 780,
+     "apercu_gratuit": false
+    }
+   ]
+  }
+ ],
+ "formules": [
+  {
+   "id": "autonome",
+   "nom": "Autonome",
+   "prix": 35000
+  },
+  {
+   "id": "accompagne",
+   "nom": "Accompagné",
+   "prix": 75000
+  },
+  {
+   "id": "vip",
+   "nom": "VIP",
+   "prix": 150000
+  }
+ ],
+ "description": "4 modules vidéo pour passer de débutant à tes premiers revenus avec l’IA : le bon état d’esprit, les outils d’IA, la création de sites et de boutiques, puis la publicité qui fait encaisser chaque mois."
+}

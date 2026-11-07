@@ -1,0 +1,5 @@
+# Images envoyées depuis l'admin : jamais de script exécuté ici
+Options -Indexes
+<FilesMatch "\.(php\d?|phtml|phar|pl|py|cgi|sh|html?|svg|js)$">
+  Require all denied
+</FilesMatch>

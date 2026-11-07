@@ -53,8 +53,13 @@
   }
 
   /* ---------- Inscription : WhatsApp, lien de paiement ou section Tarifs ---------- */
+  /* Sur le site de l'académie (pas sur GitHub Pages), « S'inscrire » mène à la création de compte. */
+  var surAcademie = /^https?:$/.test(location.protocol) && !/github\.io$/.test(location.hostname);
   function lienInscription(formuleId) {
     var f = formuleParId(formuleId);
+    if (surAcademie) {
+      return { href: "compte/inscription.php?formule=" + encodeURIComponent(f.id), externe: false };
+    }
     if (C.whatsapp) {
       var msg = "Bonjour, je veux m'inscrire à la formation Idjô Académie, formule " + f.nom + " (" + prix(f.prix) + ").";
       return { href: "https://wa.me/" + C.whatsapp + "?text=" + encodeURIComponent(msg), externe: true };
@@ -62,6 +67,15 @@
     if (C.lienPaiement) return { href: C.lienPaiement, externe: true };
     return { href: surPageFormation ? "index.html#tarifs" : "#tarifs", externe: false };
   }
+  function lienWhatsapp() {
+    return "https://wa.me/" + C.whatsapp + "?text=" + encodeURIComponent("Bonjour, j'ai une question sur Idjô Académie.");
+  }
+  $$(".js-whatsapp").forEach(function (a) {
+    if (!C.whatsapp) return;
+    a.setAttribute("href", lienWhatsapp());
+    a.setAttribute("target", "_blank");
+    a.setAttribute("rel", "noopener");
+  });
   function brancherInscription(a) {
     var lien = lienInscription(a.getAttribute("data-formule"));
     a.setAttribute("href", lien.href);
