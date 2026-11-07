@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="Module 2 : les bases de l'IA">
+  <rect width="640" height="360" fill="#6A1BF5"/>
+  <!-- fenêtre de discussion avec l'IA -->
+  <rect x="104" y="56" width="356" height="248" rx="14" fill="#FFFFFF"/>
+  <rect x="104" y="56" width="356" height="44" rx="14" fill="#000000"/>
+  <rect x="104" y="80" width="356" height="20" fill="#000000"/>
+  <circle cx="130" cy="78" r="6" fill="#FFFFFF"/>
+  <circle cx="150" cy="78" r="6" fill="#6A1BF5"/>
+  <!-- message de l'utilisateur -->
+  <rect x="264" y="122" width="172" height="40" rx="8" fill="#000000"/>
+  <rect x="280" y="138" width="120" height="8" rx="4" fill="#FFFFFF"/>
+  <!-- réponse de l'IA -->
+  <rect x="128" y="180" width="236" height="96" rx="8" fill="#EDE3FF"/>
+  <rect x="146" y="198" width="180" height="9" rx="4.5" fill="#000000"/>
+  <rect x="146" y="218" width="198" height="9" rx="4.5" fill="#000000"/>
+  <rect x="146" y="238" width="150" height="9" rx="4.5" fill="#000000"/>
+  <rect x="146" y="258" width="96" height="9" rx="4.5" fill="#6A1BF5"/>
+  <!-- étincelle IA -->
+  <path d="M520 104 C526 150 534 158 580 164 C534 170 526 178 520 224 C514 178 506 170 460 164 C506 158 514 150 520 104 Z" fill="#000000"/>
+  <path d="M556 236 C559 258 563 262 585 265 C563 268 559 272 556 294 C553 272 549 268 527 265 C549 262 553 258 556 236 Z" fill="#FFFFFF"/>
+</svg>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Idjô Académie : apprendre à gagner de l'argent grâce à l'IA</title>
+  <meta name="description" content="Formation vidéo en 4 modules et 26 leçons : le mindset, les bases de l'IA, la création de sites et de boutiques, la publicité qui fait encaisser chaque mois. Pensée pour la Côte d'Ivoire et l'Afrique francophone.">
+  <meta name="theme-color" content="#000000">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Idjô Académie : apprendre à gagner de l'argent grâce à l'IA">
+  <meta property="og:description" content="4 modules, 26 leçons vidéo, des exercices concrets. Du mindset à tes premiers clients qui paient chaque mois.">
+  <meta property="og:image" content="assets/img/og-image.png">
+  <meta property="og:locale" content="fr_FR">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/img/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <link rel="preload" href="assets/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <a class="lien-evitement" href="#contenu">Aller au contenu</a>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-coche" viewBox="0 0 20 20"><path d="M3.5 10.5 L8 15 L16.5 5.5" fill="none" stroke="#6A1BF5" stroke-width="2.6" stroke-linecap="square"/></symbol>
+    <symbol id="i-loupe" viewBox="0 0 20 20"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13 L18 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="square"/></symbol>
+    <symbol id="i-lecture" viewBox="0 0 24 24"><path d="M8 5 L19 12 L8 19 Z" fill="currentColor"/></symbol>
+    <symbol id="i-video" viewBox="0 0 24 24"><rect x="2" y="5" width="15" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M17 10 L22 7 L22 17 L17 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-livrable" viewBox="0 0 24 24"><path d="M6 2 H14 L19 7 V22 H6 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 14 L11.5 16.5 L16 11.5" fill="none" stroke="#6A1BF5" stroke-width="2.4" stroke-linecap="square"/></symbol>
+    <symbol id="i-telephone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="10" y="18" width="4" height="1.6" fill="currentColor"/></symbol>
+    <symbol id="i-portefeuille" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 6 L16 2.5 L17.5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="17" cy="13" r="1.8" fill="#6A1BF5"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M3 6 H21 M3 12 H21 M3 18 H21" stroke="currentColor" stroke-width="2.2"/></symbol>
+    <symbol id="i-fermer" viewBox="0 0 24 24"><path d="M5 5 L19 19 M19 5 L5 19" stroke="currentColor" stroke-width="2.4"/></symbol>
+  </svg>
+
+  <div class="bandeau">Inscriptions ouvertes pour la première session. Paiement par Mobile Money. <a href="#tarifs">Voir les formules</a></div>
+
+  <header class="entete" id="entete">
+    <div class="conteneur entete__ligne">
+      <a class="entete__logo" href="index.html" aria-label="Idjô Académie, accueil">
+        <img src="assets/img/logo.svg" alt="Idjô Académie" width="190" height="34">
+      </a>
+      <div class="recherche" role="search">
+        <label class="visuellement-cache" for="recherche-champ">Chercher une leçon</label>
+        <svg class="recherche__icone" width="18" height="18" aria-hidden="true"><use href="#i-loupe"/></svg>
+        <input class="recherche__champ" id="recherche-champ" type="search" autocomplete="off"
+               placeholder="Chercher une leçon : prompts, Mobile Money, pub…"
+               aria-controls="recherche-resultats" aria-expanded="false">
+        <ul class="recherche__resultats" id="recherche-resultats" hidden></ul>
+      </div>
+      <nav class="entete__nav" aria-label="Navigation principale">
+        <a href="formation.html">La formation</a>
+        <a href="#modules">Les modules</a>
+        <a href="#tarifs">Tarifs</a>
+        <a href="#faq">Questions</a>
+        <a class="bouton js-inscription" href="#tarifs" data-formule="accompagne">S'inscrire</a>
+      </nav>
+      <button class="entete__menu" type="button" aria-expanded="false" aria-controls="entete" aria-label="Ouvrir le menu">
+        <svg width="26" height="26" aria-hidden="true"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="contenu">
+    <!-- Hero : la formation présentée comme un lecteur vidéo, chapitrée par module -->
+    <section class="hero">
+      <div class="conteneur hero__grille">
+        <div class="hero__texte">
+          <h1 class="titre-affiche">Apprendre à gagner de l'argent grâce à l'IA.</h1>
+          <p class="chapeau">Une formation vidéo en 4 modules et 26 leçons courtes : le bon état d'esprit, les outils d'IA, la création de sites et la publicité qui fait encaisser chaque mois.</p>
+          <div class="hero__actions">
+            <a class="bouton" href="formation.html">Voir la formation</a>
+            <a class="bouton bouton--contour js-apercu" href="formation.html#lecon-1-1" data-lecon="1-1">Voir la première leçon</a>
+          </div>
+          <p class="hero__note">Pensée pour la Côte d'Ivoire et l'Afrique francophone. Sur téléphone comme sur ordinateur.</p>
+        </div>
+
+        <div class="lecteur fond-sombre" id="lecteur">
+          <div class="lecteur__ecran">
+            <img id="lecteur-image" src="assets/img/module-1.svg" alt="" width="640" height="360">
+            <button class="lecteur__lire js-apercu" type="button" data-lecon="1-1" id="lecteur-lire" aria-label="Voir l'aperçu de la première leçon du module">
+              <svg width="30" height="30" aria-hidden="true" style="color:#fff"><use href="#i-lecture"/></svg>
+            </button>
+            <div class="lecteur__cartouche">
+              <span class="lecteur__module" id="lecteur-module">Module 1, 6 leçons</span>
+              <span class="lecteur__titre" id="lecteur-titre">Le mindset : penser comme quelqu'un qui veut devenir riche</span>
+            </div>
+          </div>
+          <div class="lecteur__barre" id="lecteur-barre" role="group" aria-label="Chapitres de la formation : un par module"></div>
+          <div class="lecteur__infos">
+            <span id="lecteur-total"></span>
+            <a href="formation.html#programme" style="color:#fff">Tout le programme</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="conteneur atouts">
+      <ul class="atouts__liste">
+        <li><svg width="24" height="24" aria-hidden="true"><use href="#i-video"/></svg>26 leçons vidéo de 8 à 15 minutes</li>
+        <li><svg width="24" height="24" aria-hidden="true"><use href="#i-livrable"/></svg>Un livrable concret à la fin de chaque module</li>
+        <li><svg width="24" height="24" aria-hidden="true"><use href="#i-telephone"/></svg>Sur téléphone comme sur ordinateur</li>
+        <li><svg width="24" height="24" aria-hidden="true"><use href="#i-portefeuille"/></svg>Paiement par Mobile Money</li>
+      </ul>
+    </div>
+
+    <section class="section" id="modules" aria-labelledby="titre-modules">
+      <div class="conteneur">
+        <div class="section__tete">
+          <h2 class="titre-section" id="titre-modules">Les 4 modules de la formation</h2>
+          <p class="chapeau">Chaque module se termine par un livrable : à la fin, tu as un site publié, une campagne lancée et une offre à vendre.</p>
+        </div>
+        <ul class="cartes" id="cartes-modules"></ul>
+      </div>
+    </section>
+
+    <section class="section section--lilas" aria-labelledby="titre-programme">
+      <div class="conteneur">
+        <div class="section__tete">
+          <h2 class="titre-section" id="titre-programme">Ce que tu vas apprendre, module par module</h2>
+        </div>
+        <div class="onglets">
+          <div class="onglets__liste" role="tablist" aria-label="Modules" id="onglets-liste"></div>
+          <div id="onglets-panneaux"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--noir fond-sombre" aria-labelledby="titre-etapes">
+      <div class="conteneur">
+        <div class="section__tete">
+          <h2 class="titre-section" id="titre-etapes">Comment se passe la formation</h2>
+        </div>
+        <ol class="etapes">
+          <li><h3 class="titre-bloc">Regarde la leçon</h3><p>Une vidéo de 8 à 15 minutes, à regarder sur ton téléphone quand tu veux.</p></li>
+          <li><h3 class="titre-bloc">Fais l'exercice</h3><p>Tu appliques tout de suite, sur ton projet ou sur un vrai commerce de ton quartier.</p></li>
+          <li><h3 class="titre-bloc">Rends ton livrable</h3><p>À la fin de chaque module, un résultat concret. Il est corrigé dans les formules Accompagné et VIP.</p></li>
+          <li><h3 class="titre-bloc">Vends ton service</h3><p>Tu proposes ce que tu sais faire à tes premiers clients, avec les scripts et les prix de la formation.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section" id="tarifs" aria-labelledby="titre-tarifs">
+      <div class="conteneur">
+        <div class="section__tete">
+          <h2 class="titre-section" id="titre-tarifs">Choisis ta formule</h2>
+          <p class="chapeau">Les 26 leçons sont dans les trois formules. Ce qui change, c'est l'accompagnement.</p>
+        </div>
+        <ul class="tarifs" id="liste-tarifs"></ul>
+      </div>
+    </section>
+
+    <section class="section section--lilas" id="formateur" aria-labelledby="titre-formateur">
+      <div class="conteneur">
+        <h2 class="visuellement-cache" id="titre-formateur">Ton formateur</h2>
+        <div class="formateur">
+          <!-- Pour mettre ta photo : ajoute assets/img/formateur.jpg et remplace le « A » par <img src="assets/img/formateur.jpg" alt="Alan"> -->
+          <div class="formateur__photo" aria-hidden="true">A</div>
+          <div>
+            <p class="formateur__nom">Alan</p>
+            <p class="formateur__role">Ton formateur, fondateur d'Idjô Communication</p>
+            <p>Alan dirige Idjô Communication, une agence qui crée des visuels, des vidéos et des identités de marque, et qui gère les pages Facebook de ses clients.</p>
+            <p>Dans cette formation, il te montre les méthodes qu'il utilise avec l'IA pour produire plus vite, trouver des clients et les garder.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq" aria-labelledby="titre-faq">
+      <div class="conteneur">
+        <div class="section__tete">
+          <h2 class="titre-section" id="titre-faq">Questions fréquentes</h2>
+        </div>
+        <div class="faq">
+          <details>
+            <summary>Je n'y connais rien en IA. Est-ce que c'est pour moi ?</summary>
+            <p>Oui. Le module 2 part de zéro : tu crées tes comptes, tu écris tes premiers prompts et tu produis tes premiers contenus pas à pas.</p>
+          </details>
+          <details>
+            <summary>Faut-il un ordinateur ?</summary>
+            <p>Les modules 1 et 2 se suivent très bien sur téléphone. Un ordinateur est conseillé pour les modules 3 et 4, où tu construis des sites et gères des campagnes.</p>
+          </details>
+          <details>
+            <summary>Comment est-ce que je paie ?</summary>
+            <p>Par Mobile Money. Choisis ta formule et écris-nous sur WhatsApp : on t'envoie les détails du paiement et ton accès.</p>
+          </details>
+          <details>
+            <summary>Est-ce que je vais forcément gagner de l'argent ?</summary>
+            <p>Personne ne peut te le garantir. La formation te donne des compétences qui se vendent et une méthode pour trouver des clients ; tes résultats dépendent du travail que tu fournis.</p>
+          </details>
+          <details>
+            <summary>Combien de temps faut-il pour finir ?</summary>
+            <p>Compte 7 à 9 semaines à ton rythme. Avec 2 heures par jour, tu peux boucler le parcours en 30 jours.</p>
+          </details>
+          <details>
+            <summary>Quand commence la prochaine session ?</summary>
+            <p>Écris-nous sur WhatsApp pour connaître la date et réserver ta place.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="appel fond-sombre" aria-labelledby="titre-appel">
+      <div class="conteneur appel__ligne">
+        <div>
+          <h2 class="titre-section" id="titre-appel">Commence par le module 1 cette semaine.</h2>
+          <p>Ton plan de bâtisseur en 7 jours, puis tes premiers outils d'IA.</p>
+        </div>
+        <a class="bouton bouton--noir js-inscription" href="#tarifs" data-formule="accompagne">S'inscrire</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pied fond-sombre">
+    <div class="conteneur">
+      <div class="pied__grille">
+        <div>
+          <a class="pied__logo" href="index.html"><img src="assets/img/logo-blanc.svg" alt="Idjô Académie" width="190" height="34"></a>
+          <p>Apprendre à gagner de l'argent grâce à l'IA. Idjô Académie est une initiative d'Idjô Communication.</p>
+        </div>
+        <div>
+          <h2>La formation</h2>
+          <ul id="pied-modules"></ul>
+        </div>
+        <div>
+          <h2>Infos</h2>
+          <ul>
+            <li><a href="formation.html">Programme complet</a></li>
+            <li><a href="#tarifs">Tarifs</a></li>
+            <li><a href="#faq">Questions fréquentes</a></li>
+            <li><a class="js-inscription" href="#tarifs" data-formule="accompagne">Nous écrire sur WhatsApp</a></li>
+          </ul>
+        </div>
+      </div>
+      <p class="pied__bas">© <span id="annee">2026</span> Idjô Académie. Tous droits réservés.</p>
+    </div>
+  </footer>
+
+  <dialog class="fenetre" id="fenetre-apercu" aria-labelledby="fenetre-titre">
+    <button class="fenetre__fermer" type="button" data-fermer aria-label="Fermer">
+      <svg width="20" height="20" aria-hidden="true"><use href="#i-fermer"/></svg>
+    </button>
+    <div class="fenetre__ecran">
+      <img id="fenetre-image" src="assets/img/module-1.svg" alt="" width="640" height="360">
+      <p>La vidéo de cette leçon sera disponible dans ton espace élève dès le lancement.</p>
+    </div>
+    <div class="fenetre__corps">
+      <span class="fenetre__module" id="fenetre-module"></span>
+      <h2 class="titre-bloc" id="fenetre-titre"></h2>
+      <p id="fenetre-resume"></p>
+      <a class="bouton js-inscription" href="#tarifs" data-formule="accompagne">S'inscrire à la formation</a>
+    </div>
+  </dialog>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
