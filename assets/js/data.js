@@ -13,8 +13,8 @@ window.FORMATION = {
       court: "Mindset",
       titre: "Le mindset : penser comme quelqu'un qui veut devenir riche",
       accroche: "Installe l'état d'esprit qui fait tenir jusqu'au premier franc gagné.",
-      image: "assets/img/flow/module-1.webp",
-      imageGrande: "assets/img/flow/module-1-grand.webp",
+      image: "assets/img/modules/module-1.webp",
+      imageGrande: "assets/img/modules/module-1-grand.webp",
       livrable: "Ton plan de bâtisseur sur 90 jours",
       objectifs: [
         "Comprendre d'où vient l'argent : la valeur, pas l'effort",
@@ -43,8 +43,8 @@ window.FORMATION = {
       court: "IA de base",
       titre: "Les bases de l'IA : faire travailler l'IA pour toi",
       accroche: "Fais produire à l'IA des textes, visuels, vidéos et voix de qualité pro.",
-      image: "assets/img/flow/module-2.webp",
-      imageGrande: "assets/img/flow/module-2-grand.webp",
+      image: "assets/img/modules/module-2.webp",
+      imageGrande: "assets/img/modules/module-2-grand.webp",
       livrable: "Ta boîte de 20 prompts et 3 réalisations",
       objectifs: [
         "Écrire des prompts qui donnent des résultats pros",
@@ -75,8 +75,8 @@ window.FORMATION = {
       court: "Sites et boutiques",
       titre: "Créer des sites et des boutiques en ligne avec l'IA",
       accroche: "Construis un site qui encaisse en Mobile Money, puis vends ce service.",
-      image: "assets/img/flow/module-3.webp",
-      imageGrande: "assets/img/flow/module-3-grand.webp",
+      image: "assets/img/modules/module-3.webp",
+      imageGrande: "assets/img/modules/module-3-grand.webp",
       livrable: "Un site publié et ta grille d'offres",
       objectifs: [
         "Choisir ton modèle : service, boutique ou produit digital",
@@ -107,8 +107,8 @@ window.FORMATION = {
       court: "Publicité",
       titre: "La publicité avec l'IA : encaisser chaque fin de mois",
       accroche: "Lance des pubs qui vendent et fais-toi payer un forfait chaque mois.",
-      image: "assets/img/flow/module-4.webp",
-      imageGrande: "assets/img/flow/module-4-grand.webp",
+      image: "assets/img/modules/module-4.webp",
+      imageGrande: "assets/img/modules/module-4-grand.webp",
       livrable: "Une campagne lancée et ton offre mensuelle",
       objectifs: [
         "Préparer et payer un compte publicitaire depuis la Côte d'Ivoire",

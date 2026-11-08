@@ -6,3 +6,6 @@ stockage/
 televersements/*
 !televersements/.htaccess
 outils/__pycache__/
+outils/visuels-modules/*.png
+outils/visuels-modules/*.html
+outils/visuels-modules/*.webp

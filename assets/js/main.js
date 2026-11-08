@@ -130,16 +130,43 @@
     cibles.forEach(function (c) { io.observe(c); });
   }
 
-  /* ---------- Vidéo du haut de page : ordinateur seulement ---------- */
-  var video = $("#hero-video");
-  if (video) {
-    var economie = navigator.connection && navigator.connection.saveData;
-    if (window.matchMedia("(min-width: 900px)").matches && !economie && !mouvementReduit) {
-      video.src = video.getAttribute("data-src");
-      video.addEventListener("canplay", function () { video.classList.add("est-prete"); }, { once: true });
-      var lecture = video.play();
-      if (lecture && lecture.catch) lecture.catch(function () { /* lecture automatique refusée : l'image reste affichée */ });
-    }
+  /* ---------- Vidéo de présentation (haut de page) ---------- */
+  /* Tant que CONFIG.videoPresentation est vide, l'affiche reste avec « La vidéo arrive très bientôt ». */
+  var vsl = $("#vsl");
+  if (vsl && C.videoPresentation) {
+    var boutonLire = $(".vsl__lire", vsl);
+    vsl.classList.add("a-video");
+    boutonLire.hidden = false;
+    boutonLire.addEventListener("click", function () {
+      var v = el("video", { src: C.videoPresentation, controls: "", playsinline: "", preload: "auto" });
+      if (C.affichePresentation) v.setAttribute("poster", C.affichePresentation);
+      vsl.appendChild(v);
+      boutonLire.hidden = true;
+      vsl.classList.add("est-lue");
+      var lecture = v.play();
+      if (lecture && lecture.catch) lecture.catch(function () {});
+    });
+  }
+
+  /* ---------- Barre « Je m'inscris » en bas de l'écran (accueil, téléphone) ---------- */
+  var barre = $("#barre-inscription");
+  if (barre) {
+    var prixMin = Math.min.apply(null, C.formules.map(function (f) { return f.prix; }));
+    $("#barre-prix-accueil").textContent = prix(prixMin);
+    var hero = $(".hero"), sectionTarifs = $("#tarifs"), lienBarre = $("a", barre);
+    var majBarre = function () {
+      var vh = window.innerHeight;
+      var apresHaut = hero.getBoundingClientRect().bottom < 0;
+      var t = sectionTarifs.getBoundingClientRect();
+      var visible = apresHaut && !(t.top < vh && t.bottom > 0);
+      barre.classList.toggle("est-visible", visible);
+      barre.setAttribute("aria-hidden", visible ? "false" : "true");
+      lienBarre.setAttribute("tabindex", visible ? "0" : "-1");
+    };
+    var barreEnAttente = false;
+    window.addEventListener("scroll", function () { if (!barreEnAttente) { barreEnAttente = true; requestAnimationFrame(function () { barreEnAttente = false; majBarre(); }); } }, { passive: true });
+    window.addEventListener("resize", majBarre);
+    majBarre();
   }
 
   /* ---------- Fenêtre d'aperçu d'une leçon ---------- */
@@ -221,7 +248,7 @@
   if (cartes) F.modules.forEach(function (mod, i) {
     cartes.appendChild(el("li", { "class": "apparait", style: "--delai:" + (i * 0.08) + "s" }, [
       el("a", { "class": "module verre", href: "formation.html#" + mod.id }, [
-        el("div", { "class": "module__image" }, [el("img", { src: mod.image, alt: "", width: "900", height: "502", loading: "lazy" })]),
+        el("div", { "class": "module__image" }, [el("img", { src: mod.image, alt: "", width: "960", height: "600", loading: "lazy" })]),
         el("div", { "class": "module__corps" }, [
           el("span", { "class": "module__num", texte: "Module " + mod.numero }),
           el("h3", { "class": "module__titre", texte: mod.titre }),
@@ -231,117 +258,6 @@
       ])
     ]));
   });
-
-  /* ---------- Assistant : discussion avec réponses rapides ---------- */
-  var fil = $("#chat-fil");
-  function repondre(question) {
-    var q = normaliser(question);
-    var f = C.formules;
-    if (/prix|tarif|combien.*(cout|coute|paye|fcfa)|cout|cher|fcfa|formule/.test(q))
-      return "Il y a 3 formules : " + f.map(function (x) { return x.nom + " à " + prix(x.prix); }).join(", ") + ". Les 26 leçons sont dans les trois ; ce qui change, c'est l'accompagnement.";
-    if (/pai|payer|wave|orange|mtn|moov|mobile money|carte/.test(q))
-      return "Le paiement se fait par Mobile Money. Choisis ta formule et écris-nous sur WhatsApp : on t'envoie les détails du paiement et ton accès.";
-    if (/temps|duree|semaine|jour|long|rythme|heure/.test(q))
-      return "Compte 7 à 9 semaines à ton rythme, ou 30 jours avec 2 heures par jour. Chaque leçon dure 8 à 15 minutes.";
-    if (/debut|connais rien|zero|novice|nul|facile|niveau/.test(q))
-      return "Oui, c'est fait pour toi : le module 2 part de zéro. Tu crées tes comptes, tu écris tes premiers prompts et tu produis tes premiers contenus pas à pas.";
-    if (/ordi|ordinateur|telephone|portable|smartphone|pc/.test(q))
-      return "Les modules 1 et 2 se suivent très bien sur téléphone. Un ordinateur est conseillé pour les modules 3 et 4, où tu construis des sites et gères des campagnes.";
-    if (/garanti|rembours|gagner|argent|revenu|riche/.test(q))
-      return "Personne ne peut te garantir un revenu. La formation te donne des compétences qui se vendent et une méthode pour trouver des clients ; le reste dépend de ton travail.";
-    if (/certificat|diplome|attestation/.test(q))
-      return "Un certificat de fin de formation est remis dans les formules Accompagné et VIP, contre les 4 livrables.";
-    if (/formateur|alan|qui (est|anime|enseigne)/.test(q))
-      return "La formation est animée par Alan, fondateur de l'agence Idjô Communication.";
-    if (/module|programme|contenu|apprend|lecon|cours/.test(q))
-      return "4 modules : " + F.modules.map(function (m) { return m.numero + ". " + m.court; }).join(", ") + ". " + totalLecons() + " leçons vidéo au total, avec un livrable à la fin de chaque module.";
-    if (/bonjour|salut|bonsoir|hello/.test(q))
-      return "Bonjour ! Pose-moi ta question sur la formation : prix, paiement, durée ou contenu.";
-    return "Je n'ai pas la réponse à cette question. Écris-nous sur WhatsApp, ou regarde le programme complet sur la page de la formation.";
-  }
-  function ajouterBulle(texte, auteur, instantane) {
-    var b = el("p", { "class": "bulle bulle--" + auteur + (instantane ? "" : " apparait"), texte: texte });
-    fil.appendChild(b);
-    if (!instantane) requestAnimationFrame(function () { b.classList.add("est-visible"); });
-    fil.scrollTop = fil.scrollHeight;
-  }
-  if (fil) {
-    var amorces = [
-      ["Bienvenue ! Je réponds à tes questions sur la formation : prix, paiement, durée et contenu.", "ia"],
-      ["Je n'y connais rien en IA, je peux suivre ?", "moi"],
-      [repondre("je debute"), "ia"]
-    ];
-    amorces.forEach(function (a, i) {
-      fil.appendChild(el("p", { "class": "bulle bulle--" + a[1] + " apparait", style: "--delai:" + (i * 0.15) + "s", texte: a[0] }));
-    });
-    var poser = function (question) {
-      if (!question.trim()) return;
-      ajouterBulle(question, "moi");
-      setTimeout(function () { ajouterBulle(repondre(question), "ia"); }, 450);
-    };
-    $("#chat-formulaire").addEventListener("submit", function (e) {
-      e.preventDefault();
-      var c = $("#chat-champ"); poser(c.value); c.value = "";
-    });
-    $$("#chat-suggestions button").forEach(function (b) { b.addEventListener("click", function () { poser(b.textContent); }); });
-  }
-
-  /* ---------- Assistant : aperçu des leçons chapitré ---------- */
-  var chapitres = $("#chapitres");
-  if (chapitres) {
-    var images = $("#lecon-images");
-    F.modules.forEach(function (mod, i) {
-      images.appendChild(el("img", { src: mod.imageGrande || mod.image, alt: "", loading: "lazy", "class": i === 0 ? "est-active" : "" }));
-    });
-    var choisir = function (i) {
-      var mod = F.modules[i];
-      $$("img", images).forEach(function (im, k) { im.classList.toggle("est-active", k === i); });
-      $("#lecon-module").textContent = "Module " + mod.numero + ", " + mod.lecons.length + " leçons";
-      $("#lecon-titre").textContent = mod.titre;
-      var lire = $("#lecon-lire");
-      lire.setAttribute("data-lecon", mod.lecons[0].id);
-      lire.setAttribute("aria-label", "Voir l'aperçu de la leçon " + numeroLecon(mod.lecons[0].id) + " : " + mod.lecons[0].titre);
-      $$(".chapitre", chapitres).forEach(function (b, k) {
-        b.setAttribute("aria-pressed", k === i ? "true" : "false");
-        $(".chapitre__rempli", b).style.width = (k < i ? 100 : (k === i ? 40 : 0)) + "%";
-      });
-    };
-    F.modules.forEach(function (mod, i) {
-      var b = el("button", {
-        "class": "chapitre", type: "button", "aria-pressed": "false", style: "--poids:" + minutesModule(mod),
-        "aria-label": "Module " + mod.numero + " : " + mod.court
-      }, [
-        el("span", { "class": "chapitre__piste" }, [el("span", { "class": "chapitre__rempli" })]),
-        el("span", { "class": "chapitre__nom", texte: mod.court, "aria-hidden": "true" })
-      ]);
-      b.addEventListener("click", function () { choisir(i); });
-      chapitres.appendChild(b);
-    });
-    choisir(0);
-  }
-
-  /* ---------- Assistant : parallaxe (tableau de bord et premier plan) ---------- */
-  var section = $("#assistant"), tableau = $("#tableau"), premierPlan = $("#premier-plan");
-  if (section && tableau && !mouvementReduit) {
-    var grand = window.matchMedia("(min-width: 901px)");
-    var enAttente = false;
-    var maj = function () {
-      enAttente = false;
-      var r = section.getBoundingClientRect(), vh = window.innerHeight;
-      var p = Math.min(1, Math.max(0, (vh - r.top) / (vh + r.height)));
-      if (grand.matches) {
-        tableau.style.transform = "translate3d(0," + (120 - 240 * p).toFixed(1) + "px,0)";
-        premierPlan.style.transform = "translate3d(0," + (200 - 400 * p).toFixed(1) + "px,0)";
-      } else {
-        tableau.style.transform = "";
-        premierPlan.style.transform = "translate3d(0," + (80 - 120 * p).toFixed(1) + "px,0)";
-      }
-    };
-    var demander = function () { if (!enAttente) { enAttente = true; requestAnimationFrame(maj); } };
-    window.addEventListener("scroll", demander, { passive: true });
-    window.addEventListener("resize", demander);
-    maj();
-  }
 
   /* ---------- Accueil : onglets par module ---------- */
   var listeOnglets = $("#onglets-liste");

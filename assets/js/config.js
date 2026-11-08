@@ -13,6 +13,12 @@ window.CONFIG = {
 
   devise: "FCFA",
 
+  // Vidéo de présentation du haut de l'accueil (fichier .mp4 dans assets/video/).
+  // Tant que c'est vide, l'accueil affiche « La vidéo de présentation arrive très bientôt ».
+  // Exemple : "assets/video/presentation.mp4"
+  videoPresentation: "",
+  affichePresentation: "assets/img/flow/abidjan-nuit.webp",
+
   formules: [
     {
       id: "autonome",
