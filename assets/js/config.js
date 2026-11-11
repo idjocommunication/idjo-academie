@@ -17,6 +17,9 @@ window.CONFIG = {
   // Tant que c'est vide, l'accueil affiche « La vidéo de présentation arrive très bientôt ».
   // Exemple : "assets/video/presentation.mp4"
   videoPresentation: "",
+
+  // Page de vente où arrive le visiteur après avoir laissé son nom et son WhatsApp sur l'accueil.
+  pageVente: "vente.html",
   affichePresentation: "assets/img/flow/abidjan-nuit.webp",
 
   formules: [

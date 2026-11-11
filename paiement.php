@@ -1,0 +1,177 @@
+<?php
+/**
+ * Page de paiement : nom, e-mail, WhatsApp et formule, puis paiement en ligne avec CinetPay.
+ * Le compte élève est créé avec l'e-mail ; l'accès s'ouvre dès que CinetPay confirme le paiement.
+ * Tant que CinetPay n'est pas configuré (Admin > Réglages), la demande part sur WhatsApp comme avant.
+ */
+declare(strict_types=1);
+require __DIR__ . '/app/paiement.php';
+require_once __DIR__ . '/app/auth.php';
+
+$slug = (string) ($_GET['f'] ?? $_POST['f'] ?? '');
+$f = $slug !== '' ? formation_par_slug($slug) : null;
+if (!$f) {
+    $f = db()->query('SELECT * FROM formations WHERE publiee = 1 ORDER BY ordre, id LIMIT 1')->fetch() ?: null;
+}
+if (!$f || !$f['publiee']) {
+    page_erreur('Formation introuvable', 'Cette formation n\'est pas disponible pour le moment.');
+}
+$formules = formules_formation($f);
+$ids = array_column($formules, 'id');
+$choix = (string) ($_POST['formule'] ?? $_GET['formule'] ?? 'accompagne');
+if (!in_array($choix, $ids, true)) {
+    $choix = in_array('accompagne', $ids, true) ? 'accompagne' : $ids[0];
+}
+$u = utilisateur();
+$valeurs = [
+    'nom' => (string) ($_POST['nom'] ?? ($u['nom'] ?? '')),
+    'email' => (string) ($_POST['email'] ?? ($u['email'] ?? '')),
+    'whatsapp' => (string) ($_POST['whatsapp'] ?? ''),
+];
+$erreurs = [];
+$attenteManuelle = null; // demande enregistrée quand le paiement en ligne n'est pas encore activé
+$dejaAcces = false;
+
+if (est_post()) {
+    verifier_csrf();
+    $nom = trim(preg_replace('/\s+/u', ' ', $valeurs['nom']));
+    $email = mb_strtolower(trim($valeurs['email']));
+    $whatsapp = normaliser_whatsapp($valeurs['whatsapp']);
+    if (mb_strlen($nom) < 2 || mb_strlen($nom) > 80) {
+        $erreurs['nom'] = 'Écris ton nom et ton prénom.';
+    }
+    if (!email_valide($email)) {
+        $erreurs['email'] = 'Cette adresse e-mail ne semble pas valide.';
+    } elseif ($email === ADMIN_EMAIL) {
+        $erreurs['email'] = 'Cette adresse est celle de l\'administrateur : utilise l\'adresse de l\'élève.';
+    }
+    if ($whatsapp === null) {
+        $erreurs['whatsapp'] = 'Ce numéro ne semble pas valide. Exemple : 07 47 93 37 48.';
+    }
+    if (!$erreurs && !limite_ok('paiement', '', 10, 60)) {
+        $erreurs['general'] = 'Trop de tentatives depuis cette connexion. Réessaie dans une heure ou écris-nous sur WhatsApp.';
+    }
+    if (!$erreurs) {
+        $eleve = utilisateur_par_email($email);
+        $compteCree = false;
+        if (!$eleve) {
+            $eleve = creer_utilisateur($email, $nom);
+            $compteCree = true;
+            $_SESSION['comptes_crees'][] = (int) $eleve['id']; // compte créé dans ce navigateur
+        } elseif ($eleve['nom'] === '') {
+            db()->prepare('UPDATE utilisateurs SET nom = ? WHERE id = ?')->execute([$nom, $eleve['id']]);
+        }
+        if ($eleve['bloque']) {
+            $erreurs['general'] = 'Ce compte est suspendu. Contacte-nous sur WhatsApp.';
+        } elseif (a_acces($eleve, (int) $f['id'])) {
+            $dejaAcces = true;
+        } else {
+            $formule = $formules[array_search($choix, $ids, true)];
+
+            if (cinetpay_configure()) {
+                $transaction = nouvelle_transaction();
+                db()->prepare('INSERT INTO paiements (transaction_id, utilisateur_id, formation_id, formule, montant, nom, email, whatsapp, statut, compte_cree, cree_le, modifie_le) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)')
+                    ->execute([$transaction, $eleve['id'], $f['id'], $formule['nom'], $formule['prix'], $nom, $email, $whatsapp, 'en_attente', $compteCree ? 1 : 0, maintenant(), maintenant()]);
+                $_SESSION['paiements'][] = $transaction; // pour reconnaître l'acheteur au retour
+                $p = paiement_par_transaction($transaction);
+                try {
+                    rediriger(cinetpay_guichet($p, $f));
+                } catch (Throwable $e) {
+                    error_log('[paiement] ' . $e->getMessage());
+                    $erreurs['general'] = 'Le guichet de paiement ne répond pas pour le moment. Réessaie dans quelques minutes, ou écris-nous sur WhatsApp pour payer par Mobile Money.';
+                }
+            } else {
+                // Paiement en ligne pas encore activé : on garde l'ancien circuit (demande + WhatsApp).
+                $st = db()->prepare("SELECT id FROM demandes WHERE utilisateur_id = ? AND formation_id = ? AND statut = 'en_attente'");
+                $st->execute([$eleve['id'], $f['id']]);
+                if (!$st->fetchColumn()) {
+                    db()->prepare("INSERT INTO demandes (utilisateur_id, formation_id, formule, statut, cree_le) VALUES (?,?,?,'en_attente',?)")
+                        ->execute([$eleve['id'], $f['id'], $formule['nom'], maintenant()]);
+                    envoyer_email(
+                        ADMIN_EMAIL,
+                        'Nouvelle demande : ' . $nom,
+                        'Nouvelle demande d\'inscription',
+                        '<p><strong>' . e($nom) . '</strong> (' . e($email) . ', WhatsApp ' . e(formater_whatsapp($whatsapp)) . ') veut la formule ' . e($formule['nom']) . ' (' . e(prix($formule['prix'])) . ').</p><p>Le paiement en ligne n\'est pas encore activé : envoie-lui les infos de paiement, puis active son accès dans l\'admin.</p>',
+                        'Ouvrir l\'admin',
+                        url('admin/')
+                    );
+                }
+                $attenteManuelle = ['formule' => $formule, 'nom' => $nom, 'email' => $email];
+            }
+        }
+    }
+}
+
+entete('Paiement', ['classe' => 'page-paiement']);
+?>
+<div class="paiement">
+  <?php if ($dejaAcces): ?>
+    <section class="carte-app paiement__fin">
+      <h1 class="titre-app">Tu as déjà accès à cette formation</h1>
+      <p>L'adresse <strong><?= e($valeurs['email']) ?></strong> a déjà accès à « <?= e($f['titre']) ?> ». Connecte-toi pour retrouver tes cours.</p>
+      <p><a class="bouton" href="/compte/connexion.php">Me connecter</a></p>
+    </section>
+  <?php elseif ($attenteManuelle): $fo = $attenteManuelle['formule']; ?>
+    <section class="carte-app paiement__fin">
+      <h1 class="titre-app">Plus qu'une étape, <?= e(explode(' ', $attenteManuelle['nom'])[0]) ?> !</h1>
+      <p>Ta demande pour la formule <strong><?= e($fo['nom']) ?></strong> (<?= e(prix($fo['prix'])) ?>) est enregistrée. Envoie-nous le message sur WhatsApp : on te donne les détails du paiement Mobile Money, puis ton accès s'ouvre sur ton compte <?= e($attenteManuelle['email']) ?>.</p>
+      <p><a class="bouton" href="<?= e(lien_whatsapp("Bonjour, je veux prendre la formation « {$f['titre']} », formule {$fo['nom']} (" . prix($fo['prix']) . ").\nMon e-mail : {$attenteManuelle['email']}")) ?>" target="_blank" rel="noopener">Finaliser sur WhatsApp</a></p>
+    </section>
+  <?php else: ?>
+    <section class="carte-app paiement__formulaire">
+      <p class="paiement__etape">Dernière étape</p>
+      <h1 class="titre-app">Finalise ton inscription</h1>
+      <p class="paiement__intro">Remplis tes informations, choisis ta formule, puis paie en ligne. Ton accès s'ouvre dès que le paiement est confirmé.</p>
+      <?php if (!empty($erreurs['general'])): ?><p class="message message--erreur" role="alert"><?= e($erreurs['general']) ?></p><?php endif; ?>
+      <form method="post" class="formulaire" novalidate>
+        <?= champ_csrf() ?>
+        <input type="hidden" name="f" value="<?= e($f['slug']) ?>">
+        <label class="champ"><span>Nom et prénom</span>
+          <input type="text" name="nom" value="<?= e($valeurs['nom']) ?>" autocomplete="name" required maxlength="80" <?= isset($erreurs['nom']) ? 'aria-invalid="true"' : '' ?>>
+          <?php if (isset($erreurs['nom'])): ?><small class="champ__erreur"><?= e($erreurs['nom']) ?></small><?php endif; ?></label>
+        <label class="champ"><span>Adresse e-mail <small>(tes accès arrivent ici)</small></span>
+          <input type="email" name="email" value="<?= e($valeurs['email']) ?>" autocomplete="email" required <?= isset($erreurs['email']) ? 'aria-invalid="true"' : '' ?>>
+          <?php if (isset($erreurs['email'])): ?><small class="champ__erreur"><?= e($erreurs['email']) ?></small><?php endif; ?></label>
+        <label class="champ"><span>Numéro WhatsApp</span>
+          <input type="tel" name="whatsapp" value="<?= e($valeurs['whatsapp']) ?>" autocomplete="tel" inputmode="tel" placeholder="Ex. : 07 47 93 37 48" required <?= isset($erreurs['whatsapp']) ? 'aria-invalid="true"' : '' ?>>
+          <?php if (isset($erreurs['whatsapp'])): ?><small class="champ__erreur"><?= e($erreurs['whatsapp']) ?></small><?php endif; ?></label>
+        <fieldset class="champ">
+          <legend>Ta formule</legend>
+          <div class="choix-formules">
+            <?php foreach ($formules as $fo): ?>
+              <label class="choix-formule-app">
+                <input type="radio" name="formule" value="<?= e($fo['id']) ?>" data-prix="<?= e(prix($fo['prix'])) ?>" data-nom="<?= e($fo['nom']) ?>" <?= $fo['id'] === $choix ? 'checked' : '' ?>>
+                <span><strong><?= e($fo['nom']) ?></strong><em><?= e(prix($fo['prix'])) ?></em></span>
+              </label>
+            <?php endforeach; ?>
+          </div>
+        </fieldset>
+        <?php $actuelle = $formules[array_search($choix, $ids, true)]; ?>
+        <button class="bouton bouton--plein paiement__payer" type="submit">Payer <span id="montant-bouton"><?= e(prix($actuelle['prix'])) ?></span></button>
+        <p class="paiement__securite">Paiement sécurisé par CinetPay : Wave, Orange Money, MTN, Moov ou carte bancaire. En continuant, tu acceptes notre <a href="/confidentialite.html">politique de confidentialité</a>.</p>
+      </form>
+    </section>
+    <aside class="carte-app paiement__recap" aria-label="Récapitulatif">
+      <img src="/assets/img/modules/module-3.webp" alt="" width="960" height="600">
+      <h2 class="titre-bloc-app"><?= e($f['titre']) ?></h2>
+      <ul class="paiement__inclus">
+        <li>4 modules et 26 leçons vidéo</li>
+        <li>Un livrable concret par module</li>
+        <li>Sur téléphone et ordinateur</li>
+        <li>Accès dès la confirmation du paiement</li>
+      </ul>
+      <p class="paiement__total"><span>Formule <strong id="formule-recap"><?= e($actuelle['nom']) ?></strong></span><strong id="montant-recap"><?= e(prix($actuelle['prix'])) ?></strong></p>
+      <p class="petit">Une question avant de payer ? <a href="<?= e(lien_whatsapp('Bonjour, j\'ai une question avant de prendre la formation Idjô Académie.')) ?>" target="_blank" rel="noopener">Écris-nous sur WhatsApp</a>.</p>
+    </aside>
+  <?php endif; ?>
+</div>
+<script>
+  // Met à jour le montant affiché quand on change de formule.
+  document.querySelectorAll('.paiement input[name="formule"]').forEach(function (r) {
+    r.addEventListener('change', function () {
+      ['montant-bouton', 'montant-recap'].forEach(function (id) { var n = document.getElementById(id); if (n) n.textContent = r.dataset.prix; });
+      var nom = document.getElementById('formule-recap'); if (nom) nom.textContent = r.dataset.nom;
+    });
+  });
+</script>
+<?php pied();

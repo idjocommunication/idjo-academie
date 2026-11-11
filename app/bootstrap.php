@@ -8,7 +8,7 @@ declare(strict_types=1);
 /** Seul compte autorisé à entrer dans l'admin (e-mail vérifié obligatoire). */
 const ADMIN_EMAIL = 'idjocommunication@gmail.com';
 const RACINE = __DIR__ . '/..';
-const VERSION_SCHEMA = '2';
+const VERSION_SCHEMA = '3';
 
 date_default_timezone_set('Africa/Abidjan');
 mb_internal_encoding('UTF-8');
@@ -362,10 +362,10 @@ function limite_ok(string $action, string $cle, int $max, int $minutes): bool
 }
 
 /* ---------- Comptes ---------- */
-function utilisateur(): ?array
+function utilisateur(bool $recharger = false): ?array
 {
     static $u = false;
-    if ($u === false) {
+    if ($u === false || $recharger) {
         $u = null;
         if (!empty($_SESSION['uid'])) {
             $st = db()->prepare('SELECT * FROM utilisateurs WHERE id = ?');
@@ -392,6 +392,7 @@ function connecter(array $u): void
     session_regenerate_id(true);
     $_SESSION['uid'] = (int) $u['id'];
     db()->prepare('UPDATE utilisateurs SET derniere_connexion = ? WHERE id = ?')->execute([maintenant(), $u['id']]);
+    utilisateur(true);
 }
 
 function deconnecter(): void
@@ -663,6 +664,33 @@ function formules_formation(array $f): array
         }
     }
     return $propres ?: [['id' => 'standard', 'nom' => 'Accès complet', 'prix' => (int) $f['prix_fcfa']]];
+}
+
+/** Active l'accès d'un élève à une formation. Prévient l'élève par e-mail sauf si $email est faux. */
+function accorder_acces(int $uid, int $formationId, string $formule, string $note = '', bool $email = true): void
+{
+    enregistrer_ligne('acces', ['utilisateur_id' => $uid, 'formation_id' => $formationId], [
+        'formule' => $formule,
+        'actif' => 1,
+        'note' => $note,
+        'accorde_le' => maintenant(),
+    ]);
+    db()->prepare("UPDATE demandes SET statut = 'acceptee' WHERE utilisateur_id = ? AND formation_id = ? AND statut = 'en_attente'")
+        ->execute([$uid, $formationId]);
+    $st = db()->prepare('SELECT * FROM utilisateurs WHERE id = ?');
+    $st->execute([$uid]);
+    $eleve = $st->fetch();
+    $f = formation_par_id($formationId);
+    if ($email && $eleve && $f) {
+        envoyer_email(
+            $eleve['email'],
+            'Ta formation est débloquée',
+            'C\'est parti, ' . nom_affiche($eleve) . ' !',
+            '<p>Ton accès à <strong>' . e($f['titre']) . '</strong> est activé' . ($formule !== '' ? ' (formule ' . e($formule) . ')' : '') . '. Toutes les leçons sont disponibles dans ton espace.</p>',
+            'Commencer la formation',
+            url('espace/formation.php?f=' . rawurlencode($f['slug']))
+        );
+    }
 }
 
 /* ---------- Pages ---------- */

@@ -130,6 +130,27 @@ CREATE TABLE IF NOT EXISTS prospects (
   INDEX (whatsapp)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Paiements en ligne (CinetPay)
+CREATE TABLE IF NOT EXISTS paiements (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  transaction_id VARCHAR(40) NOT NULL UNIQUE,
+  utilisateur_id INT UNSIGNED NOT NULL,
+  formation_id INT UNSIGNED NOT NULL,
+  formule VARCHAR(40) NOT NULL DEFAULT '',
+  montant INT UNSIGNED NOT NULL,
+  nom VARCHAR(80) NOT NULL DEFAULT '',
+  email VARCHAR(190) NOT NULL,
+  whatsapp VARCHAR(20) NOT NULL DEFAULT '',
+  statut VARCHAR(20) NOT NULL DEFAULT 'en_attente',   -- en_attente, accepte, refuse
+  moyen VARCHAR(30) NOT NULL DEFAULT '',
+  compte_cree TINYINT(1) NOT NULL DEFAULT 0,
+  cree_le DATETIME NOT NULL,
+  modifie_le DATETIME NOT NULL,
+  INDEX (statut),
+  FOREIGN KEY (utilisateur_id) REFERENCES utilisateurs(id) ON DELETE CASCADE,
+  FOREIGN KEY (formation_id) REFERENCES formations(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS reglages (
   cle VARCHAR(60) PRIMARY KEY,
   valeur TEXT NULL

@@ -13,6 +13,8 @@ Options -Indexes
 
   # Dossiers et fichiers internes : introuvables depuis le web
   RewriteRule ^(app|outils|stockage)(/|$) - [R=404,L]
+  # Adresse courte de la page de vente
+  RewriteRule ^vente$ vente.html [L]
   RewriteRule (^|/)\.(?!well-known) - [R=404,L]
   RewriteRule \.(md|sql|py|log|part|json)$ - [R=404,L]
 </IfModule>

@@ -15,6 +15,7 @@ function admin_entete(string $titre, string $actif, array $scripts = []): void
         'formations' => ['/admin/formations.php', 'Formations'],
         'eleves' => ['/admin/eleves.php', 'Élèves'],
         'contacts' => ['/admin/contacts.php', 'Contacts'],
+        'paiements' => ['/admin/paiements.php', 'Paiements'],
         'reglages' => ['/admin/reglages.php', 'Réglages'],
     ];
     echo '<nav class="sous-nav-admin" aria-label="Admin">';
@@ -59,31 +60,6 @@ function prochain_ordre(string $table, string $colonneParent, int $parentId): in
     return (int) $st->fetchColumn();
 }
 
-function accorder_acces(int $uid, int $formationId, string $formule, string $note = ''): void
-{
-    enregistrer_ligne('acces', ['utilisateur_id' => $uid, 'formation_id' => $formationId], [
-        'formule' => $formule,
-        'actif' => 1,
-        'note' => $note,
-        'accorde_le' => maintenant(),
-    ]);
-    db()->prepare("UPDATE demandes SET statut = 'acceptee' WHERE utilisateur_id = ? AND formation_id = ? AND statut = 'en_attente'")
-        ->execute([$uid, $formationId]);
-    $st = db()->prepare('SELECT * FROM utilisateurs WHERE id = ?');
-    $st->execute([$uid]);
-    $eleve = $st->fetch();
-    $f = formation_par_id($formationId);
-    if ($eleve && $f) {
-        envoyer_email(
-            $eleve['email'],
-            'Ta formation est débloquée',
-            'C\'est parti, ' . nom_affiche($eleve) . ' !',
-            '<p>Ton accès à <strong>' . e($f['titre']) . '</strong> est activé' . ($formule !== '' ? ' (formule ' . e($formule) . ')' : '') . '. Toutes les leçons sont disponibles dans ton espace.</p>',
-            'Commencer la formation',
-            url('espace/formation.php?f=' . rawurlencode($f['slug']))
-        );
-    }
-}
 
 function compter(string $sql, array $params = []): int
 {

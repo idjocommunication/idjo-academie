@@ -121,6 +121,25 @@ CREATE TABLE IF NOT EXISTS prospects (
 CREATE INDEX IF NOT EXISTS prospects_statut ON prospects (statut);
 CREATE INDEX IF NOT EXISTS prospects_whatsapp ON prospects (whatsapp);
 
+-- Paiements en ligne (CinetPay)
+CREATE TABLE IF NOT EXISTS paiements (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  transaction_id TEXT NOT NULL UNIQUE,
+  utilisateur_id INTEGER NOT NULL REFERENCES utilisateurs(id) ON DELETE CASCADE,
+  formation_id INTEGER NOT NULL REFERENCES formations(id) ON DELETE CASCADE,
+  formule TEXT NOT NULL DEFAULT '',
+  montant INTEGER NOT NULL,
+  nom TEXT NOT NULL DEFAULT '',
+  email TEXT NOT NULL,
+  whatsapp TEXT NOT NULL DEFAULT '',
+  statut TEXT NOT NULL DEFAULT 'en_attente',
+  moyen TEXT NOT NULL DEFAULT '',
+  compte_cree INTEGER NOT NULL DEFAULT 0,
+  cree_le TEXT NOT NULL,
+  modifie_le TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS paiements_statut ON paiements (statut);
+
 CREATE TABLE IF NOT EXISTS reglages (
   cle TEXT PRIMARY KEY,
   valeur TEXT NULL

@@ -54,6 +54,24 @@ if (est_post()) {
         }
         $ok = envoyer_email(ADMIN_EMAIL, 'Test d\'envoi Idjô Académie', 'L\'envoi d\'e-mails fonctionne', '<p>Les e-mails de confirmation et les liens de connexion partent maintenant depuis ' . e($utilisateur) . '.</p>');
         flash($ok ? 'succes' : 'erreur', $ok ? 'Réglages enregistrés et e-mail de test envoyé à ' . ADMIN_EMAIL . '.' : 'Réglages enregistrés, mais l\'envoi a échoué : ' . reglage('dernier_echec_mail'));
+    } elseif ($action === 'cinetpay') {
+        if (isset($_POST['effacer_cinetpay'])) {
+            definir_reglage('cinetpay_site_id', '');
+            definir_reglage('cinetpay_apikey', '');
+            flash('info', 'Paiement en ligne désactivé : les inscriptions repassent par WhatsApp.');
+            rediriger('/admin/reglages.php');
+        }
+        $site = preg_replace('/\s+/', '', (string) ($_POST['cinetpay_site_id'] ?? ''));
+        $cle = trim((string) ($_POST['cinetpay_apikey'] ?? ''));
+        if (!preg_match('/^\d{3,12}$/', $site)) {
+            flash('erreur', 'L\'ID de site CinetPay est un nombre (ex. 123456).');
+            rediriger('/admin/reglages.php');
+        }
+        definir_reglage('cinetpay_site_id', $site);
+        if ($cle !== '') {
+            definir_reglage('cinetpay_apikey', $cle);
+        }
+        flash('succes', reglage('cinetpay_apikey') !== '' ? 'Paiement en ligne CinetPay activé.' : 'ID de site enregistré. Ajoute la clé API pour activer le paiement en ligne.');
     } elseif ($action === 'test_email') {
         $ok = envoyer_email(ADMIN_EMAIL, 'Test d\'envoi Idjô Académie', 'L\'envoi d\'e-mails fonctionne', '<p>Si tu lis ce message, les e-mails de confirmation et les liens de connexion partent bien.</p>');
         flash($ok ? 'succes' : 'erreur', $ok ? 'E-mail de test envoyé à ' . ADMIN_EMAIL . '. Regarde aussi dans les spams.' : 'L\'envoi a échoué. Vérifie la configuration e-mail de l\'hébergement.');
@@ -76,6 +94,21 @@ admin_entete('Réglages', 'reglages');
       <?= champ_csrf() ?><input type="hidden" name="action" value="whatsapp">
       <label class="champ"><span>Numéro au format international, sans + ni espace</span>
         <input type="text" name="whatsapp" value="<?= e(reglage('whatsapp', (string) conf('whatsapp', ''))) ?>" inputmode="numeric"></label>
+      <button class="bouton" type="submit">Enregistrer</button>
+    </form>
+  </section>
+
+  <section class="carte-app">
+    <h2 class="titre-bloc-app">Paiement en ligne (CinetPay)</h2>
+    <?php $cinetpayActif = reglage('cinetpay_site_id') !== '' && reglage('cinetpay_apikey') !== ''; ?>
+    <p class="petit"><?= $cinetpayActif
+        ? 'Activé : les élèves paient sur la page de paiement (Wave, Orange Money, MTN, Moov, carte) et leur accès s\'ouvre tout seul.'
+        : 'Pas encore activé : la page de paiement envoie les élèves sur WhatsApp. Colle ici l\'ID de site et la clé API de ton compte marchand CinetPay (rubrique Intégrations / API).' ?></p>
+    <form method="post" class="formulaire">
+      <?= champ_csrf() ?><input type="hidden" name="action" value="cinetpay">
+      <label class="champ"><span>ID de site (site_id)</span><input type="text" name="cinetpay_site_id" value="<?= e(reglage('cinetpay_site_id')) ?>" inputmode="numeric" autocomplete="off"></label>
+      <label class="champ"><span>Clé API (apikey) <?= reglage('cinetpay_apikey') !== '' ? '<small>(enregistrée : laisse vide pour la garder)</small>' : '' ?></span><input type="password" name="cinetpay_apikey" autocomplete="new-password"></label>
+      <?php if ($cinetpayActif): ?><label class="case"><input type="checkbox" name="effacer_cinetpay"> <span>Désactiver le paiement en ligne</span></label><?php endif; ?>
       <button class="bouton" type="submit">Enregistrer</button>
     </form>
   </section>

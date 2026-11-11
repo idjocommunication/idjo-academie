@@ -58,7 +58,7 @@
   function lienInscription(formuleId) {
     var f = formuleParId(formuleId);
     if (surAcademie) {
-      return { href: "compte/inscription.php?formule=" + encodeURIComponent(f.id), externe: false };
+      return { href: "/paiement.php?formule=" + encodeURIComponent(f.id), externe: false };
     }
     if (C.whatsapp) {
       var msg = "Bonjour, je veux m'inscrire à la formation Idjô Académie, formule " + f.nom + " (" + prix(f.prix) + ").";
@@ -141,6 +141,11 @@
       if (champ) { var c = $('[name="' + champ + '"]', form); if (c) { c.setAttribute("aria-invalid", "true"); c.focus(); } }
     };
     var reussite = function (nom, prenom) {
+      if (C.pageVente) {
+        try { sessionStorage.setItem("idjo_prenom", prenom || nom.split(" ")[0]); sessionStorage.setItem("idjo_nom", nom); } catch (e) {}
+        location.href = C.pageVente;
+        return;
+      }
       var message = "Bonjour, je suis " + nom + ". Je viens de laisser mon numéro sur le site d'Idjô Académie et j'aimerais en savoir plus sur la formation.";
       var bloc = el("div", { class: "ld-merci", role: "status" }, [
         el("p", { class: "ld-merci__titre", texte: "Merci" + (prenom ? " " + prenom : "") + " !" }),
@@ -176,6 +181,21 @@
         .then(function () { bouton.disabled = false; bouton.classList.remove("est-en-cours"); });
     });
   });
+
+  /* ---------- Page de vente : merci après la page de capture ---------- */
+  var merci = $("#merci-capture");
+  if (merci) {
+    var prenomCapture = "", nomCapture = "";
+    try { prenomCapture = sessionStorage.getItem("idjo_prenom") || ""; nomCapture = sessionStorage.getItem("idjo_nom") || ""; } catch (e) {}
+    if (prenomCapture) {
+      var oublier = function () { try { sessionStorage.removeItem("idjo_prenom"); sessionStorage.removeItem("idjo_nom"); } catch (e) {} };
+      $("#merci-prenom").textContent = prenomCapture;
+      $("#merci-wa").setAttribute("href", lienWhatsapp("Bonjour, je suis " + (nomCapture || prenomCapture) + ". Je viens de m'inscrire sur le site d'Idjô Académie."));
+      $("#merci-wa").addEventListener("click", oublier);
+      $(".merci-capture__fermer", merci).addEventListener("click", function () { merci.hidden = true; oublier(); });
+      merci.hidden = false;
+    }
+  }
 
   /* ---------- Vidéo de présentation (haut de page) ---------- */
   /* Tant que CONFIG.videoPresentation est vide, l'affiche reste avec « La vidéo arrive très bientôt ». */

@@ -23,6 +23,7 @@ $stats = [
     'Accès actifs' => compter('SELECT COUNT(*) FROM acces WHERE actif = 1'),
     'Demandes en attente' => compter("SELECT COUNT(*) FROM demandes WHERE statut = 'en_attente'"),
     'Contacts à rappeler' => compter("SELECT COUNT(*) FROM prospects WHERE statut = 'nouveau'"),
+    'Ventes en ligne' => compter("SELECT COUNT(*) FROM paiements WHERE statut = 'accepte'"),
     'Leçons sans vidéo' => compter('SELECT COUNT(*) FROM lecons WHERE video_fichier IS NULL'),
 ];
 $demandes = db()->query("SELECT d.*, u.nom, u.email, f.titre AS formation_titre FROM demandes d
