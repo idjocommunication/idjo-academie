@@ -238,3 +238,12 @@ html:has(body.page-sombre) { background: #08060A; color-scheme: dark; }
   .ld-etapes { grid-template-columns: 1fr; }
   .ld-bandeau li { font-size: 1.0625rem; gap: 22px; padding-right: 22px; }
 }
+
+/* ---------- Page de capture : menu réduit, fin de page, petit pied de page ---------- */
+.nav--capture .nav__barre { justify-content: space-between; padding-right: 10px; }
+.page-sombre .nav--capture .nav__connexion { color: rgba(255, 255, 255, 0.86); text-decoration: none; font-size: 0.9375rem; font-weight: 500; padding: 10px 16px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.16); }
+.page-sombre .nav--capture .nav__connexion:hover { color: #fff; border-color: var(--or); }
+.ld-section--fin { padding-bottom: 72px; }
+.ld-pied { border-top: 1px solid var(--bord); padding: 24px var(--gouttiere) 28px; text-align: center; font-size: 0.8125rem; color: var(--texte-pale); }
+.ld-pied a { color: var(--texte-doux); }
+.ld-pied a:hover { color: var(--or); }
