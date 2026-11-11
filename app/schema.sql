@@ -117,6 +117,19 @@ CREATE TABLE IF NOT EXISTS progression (
   FOREIGN KEY (lecon_id) REFERENCES lecons(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Contacts laissés sur la page d'accueil (nom + WhatsApp)
+CREATE TABLE IF NOT EXISTS prospects (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  nom VARCHAR(80) NOT NULL,
+  whatsapp VARCHAR(20) NOT NULL,
+  source VARCHAR(20) NOT NULL DEFAULT '',
+  statut VARCHAR(20) NOT NULL DEFAULT 'nouveau',   -- nouveau, contacte, inscrit, pas_interesse
+  cree_le DATETIME NOT NULL,
+  modifie_le DATETIME NOT NULL,
+  INDEX (statut),
+  INDEX (whatsapp)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS reglages (
   cle VARCHAR(60) PRIMARY KEY,
   valeur TEXT NULL

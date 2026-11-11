@@ -14,6 +14,7 @@ function admin_entete(string $titre, string $actif, array $scripts = []): void
         'tableau' => ['/admin/', 'Tableau de bord'],
         'formations' => ['/admin/formations.php', 'Formations'],
         'eleves' => ['/admin/eleves.php', 'Élèves'],
+        'contacts' => ['/admin/contacts.php', 'Contacts'],
         'reglages' => ['/admin/reglages.php', 'Réglages'],
     ];
     echo '<nav class="sous-nav-admin" aria-label="Admin">';

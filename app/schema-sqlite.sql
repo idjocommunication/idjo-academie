@@ -108,6 +108,19 @@ CREATE TABLE IF NOT EXISTS progression (
   PRIMARY KEY (utilisateur_id, lecon_id)
 );
 
+-- Contacts laissés sur la page d'accueil (nom + WhatsApp)
+CREATE TABLE IF NOT EXISTS prospects (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  nom TEXT NOT NULL,
+  whatsapp TEXT NOT NULL,
+  source TEXT NOT NULL DEFAULT '',
+  statut TEXT NOT NULL DEFAULT 'nouveau',
+  cree_le TEXT NOT NULL,
+  modifie_le TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS prospects_statut ON prospects (statut);
+CREATE INDEX IF NOT EXISTS prospects_whatsapp ON prospects (whatsapp);
+
 CREATE TABLE IF NOT EXISTS reglages (
   cle TEXT PRIMARY KEY,
   valeur TEXT NULL

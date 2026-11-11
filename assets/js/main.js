@@ -80,8 +80,8 @@
       })
       .catch(function () {});
   }
-  function lienWhatsapp() {
-    return "https://wa.me/" + C.whatsapp + "?text=" + encodeURIComponent("Bonjour, j'ai une question sur Idjô Académie.");
+  function lienWhatsapp(message) {
+    return "https://wa.me/" + C.whatsapp + "?text=" + encodeURIComponent(message || "Bonjour, j'ai une question sur Idjô Académie.");
   }
   $$(".js-whatsapp").forEach(function (a) {
     if (!C.whatsapp) return;
@@ -108,7 +108,9 @@
 
   /* ---------- Barre de navigation : sombre sur le haut de page, claire ensuite ---------- */
   var hautSombre = $(".hero, .tete-formation");
-  if (nav && hautSombre) {
+  var pageSombre = document.body.classList.contains("page-sombre");
+  if (nav && pageSombre) nav.classList.add("nav--sombre");
+  if (nav && hautSombre && !pageSombre) {
     var navEnAttente = false;
     var majNav = function () {
       navEnAttente = false;
@@ -130,10 +132,57 @@
     cibles.forEach(function (c) { io.observe(c); });
   }
 
+  /* ---------- Formulaires « Nom + WhatsApp » (accueil) ---------- */
+  $$("form.js-prospect").forEach(function (form) {
+    var bouton = $(".ld-envoyer", form), erreur = $(".ld-formulaire__erreur", form);
+    var montrerErreur = function (texte, champ) {
+      erreur.textContent = texte; erreur.hidden = false;
+      $$("input", form).forEach(function (i) { i.removeAttribute("aria-invalid"); });
+      if (champ) { var c = $('[name="' + champ + '"]', form); if (c) { c.setAttribute("aria-invalid", "true"); c.focus(); } }
+    };
+    var reussite = function (nom, prenom) {
+      var message = "Bonjour, je suis " + nom + ". Je viens de laisser mon numéro sur le site d'Idjô Académie et j'aimerais en savoir plus sur la formation.";
+      var bloc = el("div", { class: "ld-merci", role: "status" }, [
+        el("p", { class: "ld-merci__titre", texte: "Merci" + (prenom ? " " + prenom : "") + " !" }),
+        el("p", { texte: "C'est bien reçu. On t'écrit sur WhatsApp très vite. Tu peux aussi nous écrire tout de suite :" }),
+        el("a", { class: "bouton bouton--grand ld-merci__wa", href: lienWhatsapp(message), target: "_blank", rel: "noopener", texte: "Écrire sur WhatsApp maintenant" }),
+        el("a", { class: "ld-merci__lien", href: "#tarifs", texte: "Voir les formules" })
+      ]);
+      form.replaceWith(bloc);
+    };
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      erreur.hidden = true;
+      var nom = form.nom.value.trim().replace(/\s+/g, " ");
+      var tel = form.whatsapp.value.trim();
+      if (nom.length < 2) return montrerErreur("Écris ton nom (2 caractères au moins).", "nom");
+      if (tel.replace(/\D/g, "").length < 8) return montrerErreur("Écris ton numéro WhatsApp. Exemple : 07 47 93 37 48.", "whatsapp");
+      if (!surAcademie || !window.fetch) {
+        // Hors du site de l'académie : on ouvre directement WhatsApp.
+        window.open(lienWhatsapp("Bonjour, je suis " + nom + " (" + tel + "). J'aimerais en savoir plus sur la formation Idjô Académie."), "_blank");
+        return;
+      }
+      bouton.disabled = true; bouton.classList.add("est-en-cours");
+      fetch("/api/prospect.php", {
+        method: "POST", credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nom: nom, whatsapp: tel, site: form.site.value, source: form.getAttribute("data-source") })
+      }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+        .then(function (res) {
+          if (res.ok && res.d.ok) return reussite(nom, res.d.prenom);
+          montrerErreur(res.d.erreur || "L'envoi n'a pas marché. Réessaie ou écris-nous sur WhatsApp.", res.d.champ);
+        })
+        .catch(function () { montrerErreur("Pas de connexion. Réessaie dans un instant ou écris-nous sur WhatsApp."); })
+        .then(function () { bouton.disabled = false; bouton.classList.remove("est-en-cours"); });
+    });
+  });
+
   /* ---------- Vidéo de présentation (haut de page) ---------- */
   /* Tant que CONFIG.videoPresentation est vide, l'affiche reste avec « La vidéo arrive très bientôt ». */
   var vsl = $("#vsl");
   if (vsl && C.videoPresentation) {
+    var sectionVideo = vsl.closest("section[hidden]");
+    if (sectionVideo) sectionVideo.hidden = false;
     var boutonLire = $(".vsl__lire", vsl);
     vsl.classList.add("a-video");
     boutonLire.hidden = false;
@@ -153,12 +202,13 @@
   if (barre) {
     var prixMin = Math.min.apply(null, C.formules.map(function (f) { return f.prix; }));
     $("#barre-prix-accueil").textContent = prix(prixMin);
-    var hero = $(".hero"), sectionTarifs = $("#tarifs"), lienBarre = $("a", barre);
+    var hero = $(".hero"), lienBarre = $("a", barre);
+    var zonesSansBarre = $$("#tarifs, #rejoindre");
     var majBarre = function () {
       var vh = window.innerHeight;
       var apresHaut = hero.getBoundingClientRect().bottom < 0;
-      var t = sectionTarifs.getBoundingClientRect();
-      var visible = apresHaut && !(t.top < vh && t.bottom > 0);
+      var dansZone = zonesSansBarre.some(function (z) { var t = z.getBoundingClientRect(); return t.top < vh && t.bottom > 0; });
+      var visible = apresHaut && !dansZone;
       barre.classList.toggle("est-visible", visible);
       barre.setAttribute("aria-hidden", visible ? "false" : "true");
       lienBarre.setAttribute("tabindex", visible ? "0" : "-1");
@@ -182,7 +232,7 @@
     return true;
   }
   if (fenetre) {
-    $$("[data-fermer]", fenetre).forEach(function (b) { b.addEventListener("click", function () { fenetre.close(); }); });
+    $$("[data-fermer], [data-fermer-lien]", fenetre).forEach(function (b) { b.addEventListener("click", function () { fenetre.close(); }); });
     fenetre.addEventListener("click", function (e) { if (e.target === fenetre) fenetre.close(); });
   }
   document.addEventListener("click", function (e) {

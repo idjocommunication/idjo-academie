@@ -8,7 +8,7 @@ declare(strict_types=1);
 /** Seul compte autorisé à entrer dans l'admin (e-mail vérifié obligatoire). */
 const ADMIN_EMAIL = 'idjocommunication@gmail.com';
 const RACINE = __DIR__ . '/..';
-const VERSION_SCHEMA = '1';
+const VERSION_SCHEMA = '2';
 
 date_default_timezone_set('Africa/Abidjan');
 mb_internal_encoding('UTF-8');
@@ -273,6 +273,36 @@ function slugifier(string $texte): string
     $t = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $texte) ?: $texte;
     $t = strtolower(preg_replace('/[^A-Za-z0-9]+/', '-', $t));
     return trim($t, '-') ?: 'formation';
+}
+
+/** Met un numéro WhatsApp au format +225XXXXXXXXXX. Renvoie null s'il n'est pas valide. */
+function normaliser_whatsapp(string $brut): ?string
+{
+    $n = preg_replace('/[\s.\-()\/]/', '', $brut);
+    if (str_starts_with($n, '00')) {
+        $n = '+' . substr($n, 2);
+    }
+    if (preg_match('/^0\d{9}$/', $n)) {          // numéro ivoirien à 10 chiffres
+        $n = '+225' . $n;
+    } elseif (preg_match('/^225\d{10}$/', $n)) {
+        $n = '+' . $n;
+    }
+    return preg_match('/^\+[1-9]\d{7,14}$/', $n) ? $n : null;
+}
+
+/** Affiche +2250747933748 comme +225 07 47 93 37 48. */
+function formater_whatsapp(string $n): string
+{
+    if (preg_match('/^\+225(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})$/', $n, $m)) {
+        return '+225 ' . $m[1] . ' ' . $m[2] . ' ' . $m[3] . ' ' . $m[4] . ' ' . $m[5];
+    }
+    return $n;
+}
+
+/** Lien pour écrire à un numéro donné sur WhatsApp. */
+function lien_whatsapp_vers(string $numero, string $message): string
+{
+    return 'https://wa.me/' . preg_replace('/\D/', '', $numero) . '?text=' . rawurlencode($message);
 }
 
 function lien_whatsapp(string $message): string
