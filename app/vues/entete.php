@@ -22,13 +22,13 @@ $zone = $opts['zone'] ?? '';
 <a class="lien-evitement" href="#contenu">Aller au contenu</a>
 <header class="barre-app">
   <div class="barre-app__interieur">
-    <a class="barre-app__logo" href="/" aria-label="Idjô Académie, page d'accueil">
+    <a class="barre-app__logo" href="/vente.html" aria-label="Idjô Académie, page d'accueil">
       <img src="/assets/img/logo.svg" alt="Idjô Académie" width="135" height="34">
     </a>
     <?php if ($zone === 'admin'): ?><span class="etiquette-admin">Admin</span><?php endif; ?>
     <nav class="barre-app__liens" aria-label="Navigation du compte">
       <?php if ($u): ?>
-        <a class="barre-app__accueil" href="/"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Accueil</a>
+        <a class="barre-app__accueil" href="/vente.html"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Accueil</a>
         <a href="/espace/" <?= $zone === 'espace' ? 'aria-current="page"' : '' ?>>Mes formations</a>
         <?php if (est_admin($u)): ?><a href="/admin/" <?= $zone === 'admin' ? 'aria-current="page"' : '' ?>>Admin</a><?php endif; ?>
         <a href="/espace/compte.php" <?= $zone === 'compte' ? 'aria-current="page"' : '' ?>>Mon compte</a>
@@ -36,7 +36,7 @@ $zone = $opts['zone'] ?? '';
           <?= champ_csrf() ?><button type="submit">Déconnexion</button>
         </form>
       <?php else: ?>
-        <a class="barre-app__decouvrir" href="/">Découvrir la formation</a>
+        <a class="barre-app__decouvrir" href="/vente.html">Découvrir la formation</a>
         <a href="/compte/connexion.php">Connexion</a>
         <a class="bouton bouton--petit" href="/compte/inscription.php">Créer un compte</a>
       <?php endif; ?>

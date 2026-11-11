@@ -65,7 +65,7 @@
       return { href: "https://wa.me/" + C.whatsapp + "?text=" + encodeURIComponent(msg), externe: true };
     }
     if (C.lienPaiement) return { href: C.lienPaiement, externe: true };
-    return { href: surPageFormation ? "index.html#tarifs" : "#tarifs", externe: false };
+    return { href: surPageFormation ? "vente.html#tarifs" : "#tarifs", externe: false };
   }
   /* Visiteur déjà connecté : « Connexion » devient « Mon espace » (ou « Admin »). */
   if (surAcademie && window.fetch) {
