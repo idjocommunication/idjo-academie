@@ -122,6 +122,7 @@ CREATE TABLE IF NOT EXISTS prospects (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   nom VARCHAR(80) NOT NULL,
   whatsapp VARCHAR(20) NOT NULL,
+  email VARCHAR(190) NOT NULL DEFAULT '',
   source VARCHAR(20) NOT NULL DEFAULT '',
   statut VARCHAR(20) NOT NULL DEFAULT 'nouveau',   -- nouveau, contacte, inscrit, pas_interesse
   cree_le DATETIME NOT NULL,

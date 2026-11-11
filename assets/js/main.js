@@ -73,7 +73,7 @@
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (s) {
         if (!s || !s.connecte) return;
-        $$(".nav__compte").forEach(function (a) {
+        $$(".nav__compte, .js-compte").forEach(function (a) {
           a.textContent = s.admin ? "Admin" : "Mon espace";
           a.setAttribute("href", s.admin ? "/admin/" : "/espace/");
         });
@@ -160,8 +160,10 @@
       erreur.hidden = true;
       var nom = form.nom.value.trim().replace(/\s+/g, " ");
       var tel = form.whatsapp.value.trim();
+      var email = form.email ? form.email.value.trim() : "";
       if (nom.length < 2) return montrerErreur("Écris ton nom (2 caractères au moins).", "nom");
       if (tel.replace(/\D/g, "").length < 8) return montrerErreur("Écris ton numéro WhatsApp. Exemple : 07 47 93 37 48.", "whatsapp");
+      if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return montrerErreur("Écris ton adresse e-mail. Exemple : prenom@gmail.com.", "email");
       if (!surAcademie || !window.fetch) {
         // Hors du site de l'académie : on ouvre directement WhatsApp.
         window.open(lienWhatsapp("Bonjour, je suis " + nom + " (" + tel + "). J'aimerais en savoir plus sur la formation Idjô Académie."), "_blank");
@@ -171,7 +173,7 @@
       fetch("/api/prospect.php", {
         method: "POST", credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nom: nom, whatsapp: tel, site: form.site.value, source: form.getAttribute("data-source") })
+        body: JSON.stringify({ nom: nom, whatsapp: tel, email: email, site: form.site.value, source: form.getAttribute("data-source") })
       }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
         .then(function (res) {
           if (res.ok && res.d.ok) return reussite(nom, res.d.prenom);

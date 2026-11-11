@@ -26,8 +26,8 @@
   <link rel="preload" href="assets/fonts/outfit.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/img/formateur/jb-noir.webp" as="image">
-  <link rel="stylesheet" href="assets/css/style.css">
-  <link rel="stylesheet" href="assets/css/landing.css">
+  <link rel="stylesheet" href="assets/css/style.css?v=3c835138a8">
+  <link rel="stylesheet" href="assets/css/landing.css?v=10a1f87789">
 </head>
 <body class="page-accueil page-sombre">
   <a class="lien-evitement" href="#nom-haut">Aller au formulaire</a>
@@ -49,7 +49,6 @@
         <img class="logo-clair" src="assets/img/logo.svg" alt="Idjô Académie" width="135" height="34">
         <img class="logo-sombre" src="assets/img/logo-blanc.svg" alt="" aria-hidden="true" width="135" height="34">
       </a>
-      <a class="nav__compte nav__connexion" href="compte/connexion.php">Connexion</a>
     </div>
   </header>
 
@@ -71,10 +70,14 @@
               <label for="tel-haut">Ton numéro WhatsApp</label>
               <input id="tel-haut" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" placeholder="Ex. : 07 47 93 37 48" required>
             </div>
+            <div class="ld-champ">
+              <label for="email-haut">Ton adresse e-mail</label>
+              <input id="email-haut" name="email" type="email" inputmode="email" autocomplete="email" placeholder="Ex. : prenom@gmail.com" required maxlength="190">
+            </div>
             <div class="ld-piege" aria-hidden="true"><label>Site <input name="site" type="text" tabindex="-1" autocomplete="off"></label></div>
-            <button class="bouton bouton--grand bouton--anime ld-envoyer" type="submit">Recevoir les détails sur WhatsApp<svg width="20" height="20" aria-hidden="true"><use href="#i-fleche"/></svg></button>
+            <button class="bouton bouton--grand bouton--anime ld-envoyer" type="submit">Je m'inscris<svg width="20" height="20" aria-hidden="true"><use href="#i-fleche"/></svg></button>
             <p class="ld-formulaire__erreur" role="alert" hidden></p>
-            <p class="ld-formulaire__note"><svg width="15" height="15" aria-hidden="true"><use href="#i-cadenas"/></svg>Ton numéro reste privé. On t'écrit sur WhatsApp, sans spam.</p>
+            <p class="ld-formulaire__note"><svg width="15" height="15" aria-hidden="true"><use href="#i-cadenas"/></svg>Tes infos restent privées. Tu reçois un e-mail de confirmation, sans spam.</p>
           </form>
         </div>
         <figure class="ld-hero__photo monte monte-2">
@@ -114,11 +117,11 @@
   </main>
 
   <footer class="ld-pied">
-    <p>© <span id="annee">2026</span> Idjô Académie, une initiative d'Idjô Communication · <a href="confidentialite.html">Confidentialité</a></p>
+    <p>© <span id="annee">2026</span> Idjô Académie, une initiative d'Idjô Communication · <a href="confidentialite.html">Confidentialité</a> · <a class="js-compte" href="compte/connexion.php">Espace élève</a></p>
   </footer>
 
-  <script src="assets/js/config.js"></script>
-  <script src="assets/js/data.js"></script>
-  <script src="assets/js/main.js"></script>
+  <script src="assets/js/config.js?v=8df30fa881"></script>
+  <script src="assets/js/data.js?v=d3a4cc631e"></script>
+  <script src="assets/js/main.js?v=c20729519f"></script>
 </body>
 </html>

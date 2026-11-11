@@ -6,7 +6,7 @@
   </div>
 </footer>
 <?php foreach (($GLOBALS['options_page']['scripts'] ?? []) as $script): ?>
-<script src="<?= e($script) ?>" defer></script>
+<script src="<?= e(actif($script)) ?>" defer></script>
 <?php endforeach; ?>
 </body>
 </html>

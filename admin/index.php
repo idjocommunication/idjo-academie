@@ -71,11 +71,11 @@ admin_entete('Tableau de bord', 'tableau');
 <section class="carte-app">
   <h2 class="titre-bloc-app">Derniers contacts de la page d'accueil</h2>
   <?php if (!$contacts): ?>
-    <p class="petit">Aucun contact pour l'instant. Chaque personne qui laisse son nom et son WhatsApp sur l'accueil arrive ici, et tu reçois un e-mail.</p>
+    <p class="petit">Aucun contact pour l'instant. Chaque personne qui s'inscrit sur l'accueil arrive ici, et tu reçois un e-mail.</p>
   <?php else: ?>
   <ul class="liste-simple">
     <?php foreach ($contacts as $c): ?>
-      <li><strong><?= e($c['nom']) ?></strong> <a href="<?= e(lien_whatsapp_vers($c['whatsapp'], 'Bonjour ' . explode(' ', $c['nom'])[0] . ", c'est l'équipe Idjô Académie.")) ?>" target="_blank" rel="noopener"><?= e(formater_whatsapp($c['whatsapp'])) ?></a> <span class="petit">· <?= e(date('d/m/Y H:i', strtotime($c['cree_le']))) ?><?= $c['statut'] === 'nouveau' ? ' · à contacter' : '' ?></span></li>
+      <li><strong><?= e($c['nom']) ?></strong> <a href="<?= e(lien_whatsapp_vers($c['whatsapp'], 'Bonjour ' . explode(' ', $c['nom'])[0] . ", c'est l'équipe Idjô Académie.")) ?>" target="_blank" rel="noopener"><?= e(formater_whatsapp($c['whatsapp'])) ?></a> <span class="petit">· <?= ($c['email'] ?? '') !== '' ? e($c['email']) . ' · ' : '' ?><?= e(date('d/m/Y H:i', strtotime($c['cree_le']))) ?><?= $c['statut'] === 'nouveau' ? ' · à contacter' : '' ?></span></li>
     <?php endforeach; ?>
   </ul>
   <?php endif; ?>

@@ -23,10 +23,11 @@ if (!in_array($choix, $ids, true)) {
     $choix = in_array('accompagne', $ids, true) ? 'accompagne' : $ids[0];
 }
 $u = utilisateur();
+$inscrit = $_SESSION['inscription'] ?? []; // infos laissées sur la page d'accueil
 $valeurs = [
-    'nom' => (string) ($_POST['nom'] ?? ($u['nom'] ?? '')),
-    'email' => (string) ($_POST['email'] ?? ($u['email'] ?? '')),
-    'whatsapp' => (string) ($_POST['whatsapp'] ?? ''),
+    'nom' => (string) ($_POST['nom'] ?? ($inscrit['nom'] ?? ($u['nom'] ?? ''))),
+    'email' => (string) ($_POST['email'] ?? ($inscrit['email'] ?? ($u['email'] ?? ''))),
+    'whatsapp' => (string) ($_POST['whatsapp'] ?? (isset($inscrit['whatsapp']) ? formater_whatsapp($inscrit['whatsapp']) : '')),
 ];
 $erreurs = [];
 $attenteManuelle = null; // demande enregistrée quand le paiement en ligne n'est pas encore activé
@@ -53,7 +54,8 @@ if (est_post()) {
     }
     if (!$erreurs) {
         $eleve = utilisateur_par_email($email);
-        $compteCree = false;
+        // Compte créé dans ce navigateur, ici ou sur la page d'accueil.
+        $compteCree = $eleve && in_array((int) $eleve['id'], $_SESSION['comptes_crees'] ?? [], true);
         if (!$eleve) {
             $eleve = creer_utilisateur($email, $nom);
             $compteCree = true;

@@ -37,11 +37,12 @@ if (($_GET['export'] ?? '') === 'csv') {
     // Excel et Sheets prennent pour une formule toute case qui commence par = + - @ :
     // le numéro est donc écrit sans « + » et un nom piégé est neutralisé.
     $texte = fn(string $v): string => preg_match('/^[=+\-@\t\r]/', $v) ? "'" . $v : $v;
-    fputcsv($sortie, ['Nom', 'WhatsApp', 'Statut', 'Reçu le', 'Formulaire', 'Lien WhatsApp'], ';');
+    fputcsv($sortie, ['Nom', 'WhatsApp', 'E-mail', 'Statut', 'Reçu le', 'Formulaire', 'Lien WhatsApp'], ';');
     foreach ($lignes as $c) {
         fputcsv($sortie, [
             $texte($c['nom']),
             ltrim(formater_whatsapp($c['whatsapp']), '+'),
+            $texte($c['email'] ?? ''),
             STATUTS_CONTACT[$c['statut']] ?? $c['statut'],
             date('d/m/Y H:i', strtotime($c['cree_le'])),
             $c['source'] === 'bas' ? 'Bas de page' : 'Haut de page',
@@ -66,7 +67,7 @@ admin_entete('Contacts', 'contacts');
   <h1 class="titre-app">Contacts <span class="petit">(<?= array_sum($comptes) ?>)</span></h1>
   <a class="bouton bouton--petit bouton--verre" href="/admin/contacts.php?export=csv">Télécharger pour Excel / Google Sheets</a>
 </div>
-<p class="petit">Les personnes qui ont laissé leur nom et leur numéro WhatsApp sur la page d'accueil. Tu reçois un e-mail à chaque nouveau contact.</p>
+<p class="petit">Les personnes qui se sont inscrites sur la page d'accueil (nom, WhatsApp, e-mail). Chacune a aussi un compte élève, sans accès aux vidéos tant qu'elle n'a pas payé. Tu reçois un e-mail à chaque nouveau contact.</p>
 
 <nav class="filtres-admin" aria-label="Filtrer par statut">
   <a href="/admin/contacts.php" <?= $filtre === '' ? 'aria-current="page"' : '' ?>>Tous</a>
@@ -77,7 +78,7 @@ admin_entete('Contacts', 'contacts');
 
 <div class="tableau-defilant">
 <table class="tableau-admin">
-  <thead><tr><th>Contact</th><th>WhatsApp</th><th>Reçu le</th><th>Statut</th><th><span class="visuellement-cache">Actions</span></th></tr></thead>
+  <thead><tr><th>Contact</th><th>WhatsApp</th><th>E-mail</th><th>Reçu le</th><th>Statut</th><th><span class="visuellement-cache">Actions</span></th></tr></thead>
   <tbody>
   <?php foreach ($contacts as $c):
       $prenom = explode(' ', $c['nom'])[0];
@@ -86,6 +87,7 @@ admin_entete('Contacts', 'contacts');
     <tr>
       <td><strong><?= e($c['nom']) ?></strong><?php if ($c['statut'] === 'nouveau'): ?> <span class="badge-app badge-app--attente">Nouveau</span><?php endif; ?></td>
       <td><a class="bouton bouton--petit" href="<?= e(lien_whatsapp_vers($c['whatsapp'], $message)) ?>" target="_blank" rel="noopener"><?= e(formater_whatsapp($c['whatsapp'])) ?></a></td>
+      <td class="petit"><?php if (($c['email'] ?? '') !== ''): ?><a href="mailto:<?= e($c['email']) ?>"><?= e($c['email']) ?></a><?php else: ?>–<?php endif; ?></td>
       <td class="petit"><?= e(date('d/m/Y H:i', strtotime($c['cree_le']))) ?></td>
       <td>
         <form method="post" class="formulaire formulaire--ligne">
@@ -103,7 +105,7 @@ admin_entete('Contacts', 'contacts');
       </td>
     </tr>
   <?php endforeach; ?>
-  <?php if (!$contacts): ?><tr><td colspan="5" class="petit">Aucun contact pour l'instant.</td></tr><?php endif; ?>
+  <?php if (!$contacts): ?><tr><td colspan="6" class="petit">Aucun contact pour l'instant.</td></tr><?php endif; ?>
   </tbody>
 </table>
 </div>

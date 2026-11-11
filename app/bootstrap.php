@@ -8,7 +8,7 @@ declare(strict_types=1);
 /** Seul compte autorisé à entrer dans l'admin (e-mail vérifié obligatoire). */
 const ADMIN_EMAIL = 'idjocommunication@gmail.com';
 const RACINE = __DIR__ . '/..';
-const VERSION_SCHEMA = '3';
+const VERSION_SCHEMA = '4';
 
 date_default_timezone_set('Africa/Abidjan');
 mb_internal_encoding('UTF-8');
@@ -135,9 +135,21 @@ function installer_si_besoin(PDO $pdo): void
     foreach (array_filter(array_map('trim', explode(';', $sql))) as $requete) {
         $pdo->exec($requete);
     }
+    // Colonnes ajoutées après coup (les tables déjà créées ne les ont pas encore).
+    ajouter_colonne($pdo, 'prospects', 'email', pilote() === 'mysql' ? "VARCHAR(190) NOT NULL DEFAULT '' AFTER whatsapp" : "TEXT NOT NULL DEFAULT ''");
     $pdo->prepare("REPLACE INTO reglages (cle, valeur) VALUES ('version_schema', ?)")->execute([VERSION_SCHEMA]);
     if ((int) $pdo->query('SELECT COUNT(*) FROM formations')->fetchColumn() === 0) {
         importer_formation_initiale($pdo);
+    }
+}
+
+function ajouter_colonne(PDO $pdo, string $table, string $colonne, string $definition): void
+{
+    $colonnes = pilote() === 'mysql'
+        ? $pdo->query("SHOW COLUMNS FROM `$table`")->fetchAll(PDO::FETCH_COLUMN)
+        : array_column($pdo->query("PRAGMA table_info($table)")->fetchAll(), 'name');
+    if (!in_array($colonne, $colonnes, true)) {
+        $pdo->exec("ALTER TABLE $table ADD COLUMN $colonne $definition");
     }
 }
 
@@ -489,7 +501,7 @@ function utiliser_jeton(string $jeton, string $type): ?array
 }
 
 /* ---------- E-mails ---------- */
-function envoyer_email(string $a, string $sujet, string $titre, string $texteHtml, ?string $bouton = null, ?string $lien = null): bool
+function envoyer_email(string $a, string $sujet, string $titre, string $texteHtml, ?string $bouton = null, ?string $lien = null, string $apresHtml = ''): bool
 {
     $boutonHtml = $bouton && $lien
         ? '<p style="margin:28px 0"><a href="' . e($lien) . '" style="background:#B606AE;color:#fff;text-decoration:none;padding:14px 26px;border-radius:999px;font-weight:600;display:inline-block">' . e($bouton) . '</a></p>'
@@ -500,7 +512,9 @@ function envoyer_email(string $a, string $sujet, string $titre, string $texteHtm
         . '<p style="font-weight:700;font-size:18px;margin:0 0 20px">Idjô <span style="color:#B606AE">Académie</span></p>'
         . '<div style="background:#fff;border-radius:18px;padding:28px">'
         . '<h1 style="font-size:22px;margin:0 0 14px">' . e($titre) . '</h1>'
-        . '<div style="font-size:15px;line-height:1.6;color:#3B2B39">' . $texteHtml . '</div>' . $boutonHtml . '</div>'
+        . '<div style="font-size:15px;line-height:1.6;color:#3B2B39">' . $texteHtml . '</div>' . $boutonHtml
+        . ($apresHtml !== '' ? '<div style="font-size:15px;line-height:1.6;color:#3B2B39;border-top:1px solid #EFE6EE;margin-top:22px;padding-top:18px">' . $apresHtml . '</div>' : '')
+        . '</div>'
         . '<p style="color:#7D6D7B;font-size:12px;margin-top:18px">Tu reçois cet e-mail parce que quelqu\'un a utilisé ton adresse sur ' . e(url()) . '. Si ce n\'est pas toi, ignore-le.</p>'
         . '</div></body></html>';
 
@@ -720,4 +734,38 @@ function json(array $donnees, int $code = 200): never
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode($donnees, JSON_UNESCAPED_UNICODE);
     exit;
+}
+
+/**
+ * Envoie la réponse JSON tout de suite, puis laisse le script continuer (envoi des e-mails)
+ * sans faire attendre le visiteur.
+ */
+function json_puis_continuer(array $donnees): void
+{
+    $corps = json_encode($donnees, JSON_UNESCAPED_UNICODE);
+    http_response_code(200);
+    header('Content-Type: application/json; charset=utf-8');
+    header('Content-Length: ' . strlen($corps));
+    echo $corps;
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        session_write_close();
+    }
+    ignore_user_abort(true);
+    if (function_exists('litespeed_finish_request')) {
+        litespeed_finish_request();
+    } elseif (function_exists('fastcgi_finish_request')) {
+        fastcgi_finish_request();
+    } else {
+        while (ob_get_level() > 0) {
+            ob_end_flush();
+        }
+        flush();
+    }
+}
+
+/** Adresse d'un fichier CSS ou JS avec sa date de modification : le navigateur reprend la nouvelle version après chaque mise à jour. */
+function actif(string $chemin): string
+{
+    $fichier = dirname(__DIR__) . '/' . ltrim($chemin, '/');
+    return $chemin . (is_file($fichier) ? '?v=' . filemtime($fichier) : '');
 }

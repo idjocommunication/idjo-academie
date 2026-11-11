@@ -15,8 +15,8 @@ $zone = $opts['zone'] ?? '';
   <link rel="icon" href="/assets/img/favicon-32.png" sizes="32x32">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
   <link rel="preload" href="/assets/fonts/outfit.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/assets/css/style.css">
-  <link rel="stylesheet" href="/assets/css/espace.css">
+  <link rel="stylesheet" href="<?= e(actif('/assets/css/style.css')) ?>">
+  <link rel="stylesheet" href="<?= e(actif('/assets/css/espace.css')) ?>">
 </head>
 <body class="app <?= e($opts['classe'] ?? '') ?>">
 <a class="lien-evitement" href="#contenu">Aller au contenu</a>
