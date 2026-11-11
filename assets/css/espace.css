@@ -263,6 +263,11 @@ code { font-size: 0.8125rem; background: var(--fond-doux); border: 1px solid var
 .paiement__etape { color: var(--neon); font-weight: 600; font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 4px; }
 .paiement__intro { color: var(--texte-doux); margin: 8px 0 18px; }
 .paiement__payer { width: 100%; height: 56px; font-size: 1.0625rem; }
+.paiement__wa { width: 100%; height: 52px; gap: 10px; }
+.paiement__wa svg { flex: none; color: #25D366; }
+.paiement__wa:not(.bouton--verre) svg { color: currentColor; }
+.paiement__ou { display: flex; align-items: center; gap: 12px; margin: 4px 0; color: var(--texte-pale); font-size: 0.8125rem; }
+.paiement__ou::before, .paiement__ou::after { content: ""; flex: 1; height: 1px; background: var(--bord); }
 .paiement__securite { font-size: 0.8125rem; color: var(--texte-pale); text-align: center; }
 .paiement__securite a { color: inherit; }
 .paiement__recap { position: sticky; top: 88px; display: grid; gap: 14px; }
