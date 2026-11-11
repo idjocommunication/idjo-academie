@@ -25,6 +25,33 @@ if (est_post()) {
 }
 
 $filtre = isset(STATUTS_CONTACT[$_GET['statut'] ?? '']) ? (string) $_GET['statut'] : '';
+
+// Téléchargement de tous les contacts (CSV, s'ouvre dans Excel et Google Sheets)
+if (($_GET['export'] ?? '') === 'csv') {
+    $lignes = db()->query('SELECT * FROM prospects ORDER BY cree_le DESC')->fetchAll();
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="contacts-idjo-academie-' . date('Y-m-d') . '.csv"');
+    header('Cache-Control: no-store');
+    $sortie = fopen('php://output', 'w');
+    fwrite($sortie, "\xEF\xBB\xBF"); // pour les accents dans Excel
+    // Excel et Sheets prennent pour une formule toute case qui commence par = + - @ :
+    // le numéro est donc écrit sans « + » et un nom piégé est neutralisé.
+    $texte = fn(string $v): string => preg_match('/^[=+\-@\t\r]/', $v) ? "'" . $v : $v;
+    fputcsv($sortie, ['Nom', 'WhatsApp', 'Statut', 'Reçu le', 'Formulaire', 'Lien WhatsApp'], ';');
+    foreach ($lignes as $c) {
+        fputcsv($sortie, [
+            $texte($c['nom']),
+            ltrim(formater_whatsapp($c['whatsapp']), '+'),
+            STATUTS_CONTACT[$c['statut']] ?? $c['statut'],
+            date('d/m/Y H:i', strtotime($c['cree_le'])),
+            $c['source'] === 'bas' ? 'Bas de page' : 'Haut de page',
+            'https://wa.me/' . ltrim($c['whatsapp'], '+'),
+        ], ';');
+    }
+    fclose($sortie);
+    exit;
+}
+
 $comptes = [];
 foreach (array_keys(STATUTS_CONTACT) as $s) {
     $comptes[$s] = compter('SELECT COUNT(*) FROM prospects WHERE statut = ?', [$s]);
@@ -37,6 +64,7 @@ admin_entete('Contacts', 'contacts');
 ?>
 <div class="entete-admin">
   <h1 class="titre-app">Contacts <span class="petit">(<?= array_sum($comptes) ?>)</span></h1>
+  <a class="bouton bouton--petit bouton--verre" href="/admin/contacts.php?export=csv">Télécharger pour Excel / Google Sheets</a>
 </div>
 <p class="petit">Les personnes qui ont laissé leur nom et leur numéro WhatsApp sur la page d'accueil. Tu reçois un e-mail à chaque nouveau contact.</p>
 

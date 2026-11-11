@@ -30,6 +30,7 @@ $demandes = db()->query("SELECT d.*, u.nom, u.email, f.titre AS formation_titre 
     JOIN utilisateurs u ON u.id = d.utilisateur_id JOIN formations f ON f.id = d.formation_id
     WHERE d.statut = 'en_attente' ORDER BY d.cree_le DESC")->fetchAll();
 $recents = db()->query('SELECT * FROM utilisateurs ORDER BY cree_le DESC LIMIT 8')->fetchAll();
+$contacts = db()->query('SELECT * FROM prospects ORDER BY cree_le DESC LIMIT 8')->fetchAll();
 
 admin_entete('Tableau de bord', 'tableau');
 ?>
@@ -65,6 +66,20 @@ admin_entete('Tableau de bord', 'tableau');
   </table>
   </div>
   <?php endif; ?>
+</section>
+
+<section class="carte-app">
+  <h2 class="titre-bloc-app">Derniers contacts de la page d'accueil</h2>
+  <?php if (!$contacts): ?>
+    <p class="petit">Aucun contact pour l'instant. Chaque personne qui laisse son nom et son WhatsApp sur l'accueil arrive ici, et tu reçois un e-mail.</p>
+  <?php else: ?>
+  <ul class="liste-simple">
+    <?php foreach ($contacts as $c): ?>
+      <li><strong><?= e($c['nom']) ?></strong> <a href="<?= e(lien_whatsapp_vers($c['whatsapp'], 'Bonjour ' . explode(' ', $c['nom'])[0] . ", c'est l'équipe Idjô Académie.")) ?>" target="_blank" rel="noopener"><?= e(formater_whatsapp($c['whatsapp'])) ?></a> <span class="petit">· <?= e(date('d/m/Y H:i', strtotime($c['cree_le']))) ?><?= $c['statut'] === 'nouveau' ? ' · à contacter' : '' ?></span></li>
+    <?php endforeach; ?>
+  </ul>
+  <?php endif; ?>
+  <p><a href="/admin/contacts.php">Voir tous les contacts</a> · <a href="/admin/contacts.php?export=csv">Télécharger pour Excel / Google Sheets</a></p>
 </section>
 
 <section class="carte-app">
